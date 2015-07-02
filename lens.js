@@ -3,6 +3,7 @@
 export {
   compose,
   get,
+  map,
   set,
 }
 
@@ -53,4 +54,8 @@ function get<S,A>(getter: Getting<A,S,A>, obj: S): A {
 
 function set<S,T,A,B>(setter: Setter<S,T,A,B>, val: B, obj: S): T {
   return setter(_ => identity(val))(obj).getIdentity
+}
+
+function map<S,T,A,B>(setter: Setter<S,T,A,B>, f: (val: A) => B, obj: S): T {
+  return setter(a => identity(f(a)))(obj).getIdentity
 }
