@@ -1,0 +1,19 @@
+{
+  "name": "lens",
+  "version": "1.0.0",
+  "description": "Type-safe, functional lens library",
+  "main": "lens.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "lens",
+    "functional",
+    "cursors"
+  ],
+  "author": "Jesse Hallett <jesse@sitr.us>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "immutable": "^3.7.4"
+  }
+}
