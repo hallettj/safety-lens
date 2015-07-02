@@ -22,24 +22,23 @@ export type Functor<A> = {
   map<B>(f: (val: A) => B): Functor<B>
 }
 
-type Const<R,A> = Functor<A> & { getConst: R }
-
-function constant<R,A>(val: R): Const<R,A> {
-  var self = {
-    getConst: val,
-    map<B>(f: (_: any) => B): Const<typeof val,B> { return self },
+class Const<R,A> {
+  value: R;
+  constructor(value: R) {
+    this.value = value
   }
-  return self
+  map<B>(f: (_: A) => B): Const<R,B> {
+    return new Const(this.value)
+  }
 }
 
-type Identity<A> = Functor<A> & { getIdentity: A }
-
-function identity<A>(val: A): Identity<A> {
-  return {
-    getIdentity: val,
-    map<B>(f: (a: typeof val) => B): Identity<B> {
-      return identity(f(val))
-    },
+class Identity<A> {
+  value: A;
+  constructor(value: A) {
+    this.value = value
+  }
+  map<B>(f: (_: A) => B): Identity<B> {
+    return new Identity(f(this.value))
   }
 }
 
@@ -49,13 +48,13 @@ function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
 }
 
 function get<S,A>(getter: Getting<A,S,A>, obj: S): A {
-  return getter(constant)(obj).getConst
+  return getter(v => new Const(v))(obj).value
 }
 
 function set<S,T,A,B>(setter: Setter<S,T,A,B>, val: B, obj: S): T {
-  return setter(_ => identity(val))(obj).getIdentity
+  return setter(_ => new Identity(val))(obj).value
 }
 
 function map<S,T,A,B>(setter: Setter<S,T,A,B>, f: (val: A) => B, obj: S): T {
-  return setter(a => identity(f(a)))(obj).getIdentity
+  return setter(a => new Identity(f(a)))(obj).value
 }
