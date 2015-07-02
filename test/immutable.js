@@ -1,3 +1,5 @@
+/* @flow */
+
 import { expect } from 'chai'
 import { List, fromJS, is } from 'immutable'
 import { compose, get, map, set } from '../lens'
