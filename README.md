@@ -41,7 +41,7 @@ You can also modify nested data with a function,
 again using the same lens:
 
 ```js
-var updated_ = set(lens, x => x * 2, data)
+var updated_ = map(lens, x => x * 2, data)
 assert( is(updated_, fromJS([[1, 6], [3, 4]])) )
 ```
 
