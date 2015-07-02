@@ -23,17 +23,6 @@ export type Functor<A> = {
   map<B>(f: (val: A) => B): Functor<B>
 }
 
-function index<A,B>(idx: number): Lens<List<A>,List<B>,A,B> {
-  return f => (pure, list) => {
-    if (list.has(idx)) {
-      return f(pure, list.get(idx)).map(v => list.set(idx, v))
-    }
-    else {
-      return pure(list)
-    }
-  }
-}
-
 // type Lens' s t a b = forall f. Functor f => (a -> f b) -> s -> f t
 
 // function compose(x: LensLike, y: LensLike): LensLike
