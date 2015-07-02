@@ -2,6 +2,13 @@
   "name": "lens",
   "version": "1.0.0",
   "description": "Type-safe, functional lens library",
+  "author": "Jesse Hallett <jesse@sitr.us>",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/hallettj/lens.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hallettj/lens.js.git"
+  },
   "main": "lens.js",
   "scripts": {
     "test": "node_modules/.bin/flow && node_modules/.bin/babel-node node_modules/.bin/_mocha --recursive -R spec --check-leaks test/"
@@ -11,15 +18,13 @@
     "functional",
     "cursors"
   ],
-  "author": "Jesse Hallett <jesse@sitr.us>",
-  "license": "Apache-2.0",
-  "peerDependencies": {
-    "immutable": "^3.7.0"
+  "dependencies": {
+    "immutable": "*"
   },
   "devDependencies": {
     "babel": "^5.6.14",
     "chai": "^3.0.0",
-    "flow-bin": "^0.12.0",
+    "flow-bin": "^0.13.1",
     "mocha": "^2.2.5"
   }
 }
