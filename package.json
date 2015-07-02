@@ -4,7 +4,7 @@
   "description": "Type-safe, functional lens library",
   "main": "lens.js",
   "scripts": {
-    "test": "make test"
+    "test": "node_modules/.bin/flow && node_modules/.bin/babel-node node_modules/.bin/_mocha --recursive -R spec --check-leaks test/"
   },
   "keywords": [
     "lens",
