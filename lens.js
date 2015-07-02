@@ -1,16 +1,9 @@
 /* @flow */
 
-import type { IndexedCollection, List } from 'immutable'
-
-// export type Getter<S,A> = {
-//   to(obj: S): A
-// }
-
-// export type Setter<S,T,A,B> = {
-//   sets(f: (a: A) => B): (obj: S) => T
-// }
-
-// export type Lens<S,T,A,B> = Getter<S,A> & Setter<S,T,A,B>
+export {
+  compose,
+  get,
+}
 
 export type Lens<S,T,A,B> =
   (f: (val: A) => Functor<B>) => ((obj: S) => Functor<T>)
@@ -26,10 +19,6 @@ export type Functor<A> = {
 
 type Const<A,B> = Functor<B> & { getConst: A }
 
-export {
-  get,
-}
-
 function constant<A,B>(val: A): Const<A,B> {
   var self = {
     getConst: val,
@@ -38,10 +27,10 @@ function constant<A,B>(val: A): Const<A,B> {
   return self
 }
 
-
-// type Lens' s t a b = forall f. Functor f => (a -> f b) -> s -> f t
-
-// function compose(x: LensLike, y: LensLike): LensLike
+// Ordinary function composition
+function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
+  return x => f(g(x))
+}
 
 function get<S,A>(obj: S, getter: Getting<A,S,A>): A {
   return getter(constant)(obj).getConst
