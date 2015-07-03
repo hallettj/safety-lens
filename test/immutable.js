@@ -2,7 +2,7 @@
 
 import { expect } from 'chai'
 import { List, fromJS, is } from 'immutable'
-import { compose, get, map, set } from '../lens'
+import { compose, get, over, set } from '../lens'
 import { index } from '../immutable'
 
 describe('immutable', () => {
@@ -37,17 +37,17 @@ describe('immutable', () => {
     .to.be.true
   })
 
-  it('maps an index with `index`', () => {
+  it('modifies an index with a function with `index`', () => {
     expect(
-      is( map(index(2), x => x * 2, list), List([1,2,6,4]) )
+      is( over(index(2), x => x * 2, list), List([1,2,6,4]) )
     )
     .to.be.true
   })
 
-  it('maps nested indexes via composition', () => {
+  it('modifies nested indexes via composition', () => {
     var lens = compose(index(1), index(0))
     expect(
-      is( map(lens, x => x * 2, nestedList), fromJS([[1, 2], [6, 4]]) )
+      is( over(lens, x => x * 2, nestedList), fromJS([[1, 2], [6, 4]]) )
     )
     .to.be.true
   })

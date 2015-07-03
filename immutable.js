@@ -1,5 +1,7 @@
 /* @flow */
 
+import { lens } from './lens'
+
 import type { IndexedCollection, List } from 'immutable'
 import type { Lens } from './lens'
 
@@ -8,7 +10,8 @@ export {
 }
 
 function index<A,B>(idx: number): Lens<List<A>,List<B>,A,B> {
-  return f => list => (
-    f(list.get(idx)).map(v => list.set(idx, v))
+  return lens(
+    list => list.get(idx),
+    (list, val) => list.set(idx, val)
   )
 }

@@ -21,7 +21,7 @@ To get the second element from the first sub-list,
 you could use this lens:
 
 ```js
-import { compose, get, set, map } from 'lens'
+import { compose, get, set, over } from 'lens'
 import { index } from 'lens/immutable'
 
 var lens = compose(index(0), index(1))
@@ -41,7 +41,7 @@ You can also modify nested data with a function,
 again using the same lens:
 
 ```js
-var updated_ = map(lens, x => x * 2, data)
+var updated_ = over(lens, x => x * 2, data)
 assert( is(updated_, fromJS([[1, 6], [3, 4]])) )
 ```
 
