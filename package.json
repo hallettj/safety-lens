@@ -11,7 +11,7 @@
   },
   "main": "lens.js",
   "scripts": {
-    "test": "node_modules/.bin/flow && node_modules/.bin/babel-node node_modules/.bin/_mocha --recursive -R spec --check-leaks test/"
+    "test": "node_modules/.bin/flow && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/"
   },
   "keywords": [
     "lens",
@@ -25,6 +25,7 @@
     "babel": "^5.6.14",
     "chai": "^3.0.0",
     "flow-bin": "^0.13.1",
+    "jsverify": "hallettj/jsverify#patch/maxsize-zero",
     "mocha": "^2.2.5"
   }
 }

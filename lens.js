@@ -34,6 +34,7 @@ class Functor<A> {
 class Const<R,A> extends Functor<A> {
   value: R;
   constructor(value: R) {
+    super()
     this.value = value
   }
   map<B>(f: (_: A) => B): Const<R,B> {
@@ -44,6 +45,7 @@ class Const<R,A> extends Functor<A> {
 class Identity<A> extends Functor<A> {
   value: A;
   constructor(value: A) {
+    super()
     this.value = value
   }
   map<B>(f: (_: A) => B): Identity<B> {
