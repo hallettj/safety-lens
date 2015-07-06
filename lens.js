@@ -1,13 +1,16 @@
 /* @flow */
 
+import type { Applicative, Functor } from './src/fantasy-land'
+
 export {
-  Functor,
   compose,
   get,
   lens,
   over,
   set,
 }
+
+/* Types */
 
 export type Lens<S,T,A,B> =
   (f: (val: A) => $Subtype<Functor<B>>) => ((obj: S) => $Subtype<Functor<T>>)
@@ -25,16 +28,17 @@ export type Setter<S,T,A,B> = Setting<S,T,A,B>
 
 export type SimpleSetter<S,A> = Setter<S,S,A,A>
 
-class Functor<A> {
-  map<B>(f: (val: A) => B): Functor<B> {
-    throw 'Functor#map is abstract'
-  }
-}
+export type Traversal<S,T,A,B> =
+  (f: (val: A) => $Subtype<Applicative<B>>) => ((obj: S) => $Subtype<Applicative<T>>)
 
-class Const<R,A> extends Functor<A> {
+
+/*
+ * Algebraic implementations
+ */
+
+class Const<R,A> {
   value: R;
   constructor(value: R) {
-    super()
     this.value = value
   }
   map<B>(f: (_: A) => B): Const<R,B> {
@@ -42,16 +46,16 @@ class Const<R,A> extends Functor<A> {
   }
 }
 
-class Identity<A> extends Functor<A> {
+class Identity<A> {
   value: A;
   constructor(value: A) {
-    super()
     this.value = value
   }
   map<B>(f: (_: A) => B): Identity<B> {
     return new Identity(f(this.value))
   }
 }
+
 
 // Ordinary function composition
 function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
