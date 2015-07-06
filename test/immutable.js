@@ -1,9 +1,9 @@
 
 import { expect } from 'chai'
-import { integer, pair } from 'jsverify'
+import { elements, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
 import { compose, get, over, set } from '../lens'
-import { index, safeIndex } from '../immutable'
+import { index, safeIndex, key } from '../immutable'
 import * as laws from './laws'
 import { dependent } from './immutable/arbitrary'
 import * as arbitrary from './immutable/arbitrary'
@@ -49,6 +49,16 @@ describe('immutable', () => {
       arbitrary.fmap(
         ([i,j]) => compose(safeIndex(i), safeIndex(j)),
         pair(integer(0, 10), integer(0, 10))
+      )
+    ),
+    value: integer,
+  }))
+
+  describe('key', lensLaws({
+    dataAndLens: dependent(
+      arbitrary.nemap(integer),
+      map => elements(map.keySeq().toJS()).generator.map(
+        k => key(k)
       )
     ),
     value: integer,

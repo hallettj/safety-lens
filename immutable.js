@@ -2,12 +2,13 @@
 
 import { lens } from './lens'
 
-import type { IndexedCollection, List } from 'immutable'
+import type { List, Map } from 'immutable'
 import type { SimpleLens } from './lens'
 
 export {
   index,
   safeIndex,
+  key,
 }
 
 /*
@@ -40,5 +41,15 @@ function safeIndex<A>(idx: number): SimpleLens<List<A>,?A> {
   return lens(
     list => list.get(idx),
     (list, val) => typeof val !== 'undefined' ? list.set(idx, val) : list
+  )
+}
+
+
+/* Map */
+
+function key<K,V>(k: K): SimpleLens<Map<K,V>,V> {
+  return lens(
+    map => map.get(k),
+    (map, val) => map.set(k, val)
   )
 }

@@ -1,5 +1,5 @@
 
-import { array, bless, generator, integer, nearray, show, shrink } from 'jsverify'
+import { array, bless, dict, generator, integer, nearray, show, shrink, suchthat } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
 import { index } from '../../immutable'
 
@@ -10,6 +10,8 @@ export {
   fmap,
   list,
   nelist,
+  map,
+  nemap,
 }
 
 function dependent(arb: Arbitrary<A>, f: (a: A) => Generator<B>): Arbitrary<[A,B]> {
@@ -44,18 +46,14 @@ function nelist<A>(arb: Arbitrary<A>): Arbitrary<List<A>> {
   )
 }
 
+// TODO: arbKey is ignored for now
+function map<K,V>(arbKey: Arbitrary<K>, arbVal: Arbitrary<V>): Arbitrary<Map<K,V>> {
+  return dict(arbVal).smap(
+    obj => fromJS(obj),
+    m => m.toObject()
+  )
+}
 
-// function nestedLest<A>(arb: Arbitrary<A>): Arbitrary<List<List<A>>> {
-//   return nearray(nearray(arb)).smap(
-//     xs => fromJS(xs),
-//     xs => xs.toJS()
-//   )
-// }
-
-// function arbitraryLens<S,T,A,B,X>(arb: Arbitrary<X>, f: (_: X) => Lens<S,T,A,B>): Arbitrary<Lens<S,T,A,B>> {
-//   return bless({
-//     generator: arb.generator.map(f),
-//     shrink: lens => [],
-//     show: lens => "a lens",
-//   })
-// }
+function nemap<K,V>(arbKey: Arbitrary<K>, arbVal: Arbitrary<V>): Arbitrary<Map<K,V>> {
+  return suchthat(map(arbKey, arbVal), m => !m.isEmpty())
+}
