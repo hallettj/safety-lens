@@ -8,7 +8,7 @@
  */
 
 export type Functor<A> = {
-  map<B>(f: (val: A) => B): Functor<B>
+  map<B>(f: (val: A) => B): $Subtype<Functor<B>>
 }
 
 export type Apply<F> = Functor<F> & {

@@ -2,7 +2,7 @@
 
 import { lens } from './lens'
 
-import type { Lens, SimpleLens } from './lens'
+import type { Lens, Lens_ } from './lens'
 
 export {
   index,
@@ -14,7 +14,7 @@ export {
 
 /* arrays */
 
-function index<A>(idx: number): SimpleLens<A[],A> {
+function index<A>(idx: number): Lens_<A[],A> {
   return lens(
     list => list[idx],
     (list, val) => list.map((v, i) => i === idx ? val : v)
@@ -24,7 +24,7 @@ function index<A>(idx: number): SimpleLens<A[],A> {
 
 /* objects */
 
-function prop<S:Object,A>(key: $Enum<S>): SimpleLens<S,A> {
+function prop<S:Object,A>(key: $Enum<S>): Lens_<S,A> {
   return lens(
     obj => obj[key],
     (obj, val) => {

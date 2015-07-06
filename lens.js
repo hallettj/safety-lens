@@ -13,23 +13,35 @@ export {
 /* Types */
 
 export type Lens<S,T,A,B> =
-  (f: (val: A) => $Subtype<Functor<B>>) => ((obj: S) => $Subtype<Functor<T>>)
+  (f: (pure: Pure_, val: A) => $Subtype<Functor<B>>) => ((pure: Pure_, obj: S) => $Subtype<Functor<T>>)
 
-export type SimpleLens<S,A> = Lens<S,S,A,A>
+export type Lens_<S,A> = Lens<S,S,A,A>
 
 export type Getting<R,S,A> =
-  (f: (val: A) => Const<R,A>) => ((obj: S) => Const<R,S>)
+  (f: (pure: Pure_, val: A) => Const<R,A>) => ((pure: Pure_, obj: S) => Const<R,S>)
 
 export type Setting<S,T,A,B> =
-  (f: (val: A) => Identity<B>) => ((obj: S) => Identity<T>)
+  (f: (pure: Pure_, val: A) => Identity<B>) => ((pure: Pure_, obj: S) => Identity<T>)
 
 export type Getter<S,A> = Getting<A,S,A>
 export type Setter<S,T,A,B> = Setting<S,T,A,B>
 
-export type SimpleSetter<S,A> = Setter<S,S,A,A>
+export type Setter_<S,A> = Setter<S,S,A,A>
 
 export type Traversal<S,T,A,B> =
-  (f: (val: A) => $Subtype<Applicative<B>>) => ((obj: S) => $Subtype<Applicative<T>>)
+  (f: (pure: Pure, val: A) => $Subtype<Applicative<B>>) => ((pure: Pure, obj: S) => $Subtype<Applicative<T>>)
+
+export type Traversal_<S,A> = Traversal<S,S,A,A>
+
+
+/*
+ * Supporting interfaces
+ */
+
+// `Pure_` is "pure" for functors - will not be invoked unless further
+// constrained to `Pure`
+type Pure_ = Function
+type Pure = <T>(_: T) => $Subtype<Applicative<T>>
 
 
 /*
@@ -38,6 +50,9 @@ export type Traversal<S,T,A,B> =
 
 class Const<R,A> {
   value: R;
+  static of<X,T>(val: X): Const<X,T> {
+    return new Const(val)
+  }
   constructor(value: R) {
     this.value = value
   }
@@ -48,6 +63,9 @@ class Const<R,A> {
 
 class Identity<A> {
   value: A;
+  static of<T>(val: T): Identity<T> {
+    return new Identity(val)
+  }
   constructor(value: A) {
     this.value = value
   }
@@ -69,8 +87,8 @@ function lens<S,T,A,B>(
   getter: (obj: S) => A,
   setter: (obj: S, val: B) => T
 ): Lens<S,T,A,B> {
-  return f => obj => (
-    f(getter(obj)).map(val => setter(obj, val))
+  return f => (pure, obj) => (
+    f(pure, getter(obj)).map(val => setter(obj, val))
   )
 }
 
@@ -78,22 +96,22 @@ function lens<S,T,A,B>(
 /* getting */
 
 function to<S,A>(getter: (obj: S) => A): Getter<S,A> {
-  return f => obj => (
-    f(getter(obj)).map(val => obj)
+  return f => (pure, obj) => (
+    f(pure, getter(obj)).map(val => obj)
   )
 }
 
 function get<S,A>(getter: Getting<A,S,A>, obj: S): A {
-  return getter(v => new Const(v))(obj).value
+  return getter((_, val) => Const.of(val))(Const.of, obj).value
 }
 
 
 /* setting */
 
 function set<S,T,A,B>(setter: Setter<S,T,A,B>, val: B, obj: S): T {
-  return setter(_ => new Identity(val))(obj).value
+  return setter((_, __) => Identity.of(val))(Identity.of, obj).value
 }
 
 function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
-  return setter(a => new Identity(f(a)))(obj).value
+  return setter((_, a) => Identity.of(f(a)))(Identity.of, obj).value
 }

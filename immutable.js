@@ -3,7 +3,7 @@
 import { lens } from './lens'
 
 import type { List, Map } from 'immutable'
-import type { SimpleLens } from './lens'
+import type { Lens_ } from './lens'
 
 export {
   index,
@@ -30,14 +30,14 @@ export {
 
 /* List */
 
-function index<A>(idx: number): SimpleLens<List<A>,A> {
+function index<A>(idx: number): Lens_<List<A>,A> {
   return lens(
     list => list.get(idx),
     (list, val) => list.set(idx, val)
   )
 }
 
-function safeIndex<A>(idx: number): SimpleLens<List<A>,?A> {
+function safeIndex<A>(idx: number): Lens_<List<A>,?A> {
   return lens(
     list => list.get(idx),
     (list, val) => typeof val !== 'undefined' ? list.set(idx, val) : list
@@ -47,7 +47,7 @@ function safeIndex<A>(idx: number): SimpleLens<List<A>,?A> {
 
 /* Map */
 
-function key<K,V>(k: K): SimpleLens<Map<K,V>,V> {
+function key<K,V>(k: K): Lens_<Map<K,V>,V> {
   return lens(
     map => map.get(k),
     (map, val) => map.set(k, val)
