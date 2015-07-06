@@ -20,7 +20,7 @@ describe('immutable', () => {
     value: integer,
   }))
 
-  describe('nested indexes', lensLaws({
+  describe('nested index', lensLaws({
     dataAndLens: dependent(
       arbitrary.nelist(arbitrary.nelist(integer)),
       list => {
@@ -39,6 +39,17 @@ describe('immutable', () => {
     dataAndLens: pair(
       arbitrary.list(integer),
       arbitrary.fmap(i => safeIndex(i), integer(0, 10))
+    ),
+    value: integer,
+  }))
+
+  describe('nested safeIndex', lensLaws({
+    dataAndLens: pair(
+      arbitrary.list(arbitrary.list(integer)),
+      arbitrary.fmap(
+        ([i,j]) => compose(safeIndex(i), safeIndex(j)),
+        pair(integer(0, 10), integer(0, 10))
+      )
     ),
     value: integer,
   }))
