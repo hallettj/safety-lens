@@ -1,9 +1,14 @@
 /* @flow */
 
-import type { Applicative, Functor } from './src/fantasy-land'
+import { rmap } from './src/Profunctor'
+
+import type { Applicative, Functor, Traversable } from './src/fantasy-land'
+import type { Profunctor } from './src/Profunctor'
 
 export {
   compose,
+  foldMapOf,
+  foldrOf,
   get,
   lens,
   over,
@@ -23,7 +28,14 @@ export type Getting<R,S,A> =
 export type Setting<S,T,A,B> =
   (f: (pure: Pure_, val: A) => Identity<B>) => ((pure: Pure_, obj: S) => Identity<T>)
 
-export type Getter<S,A> = Getting<A,S,A>
+export type Getter<S,A> =
+  (f: (pure: Pure_, val: A) => ($Subtype<Contravariant<A> & Functor<A>>)) =>
+      ((pure: Pure_, obj: S) => ($Subtype<Contravariant<S> & Functor<S>>))
+
+export type Setter<S,T,A,B> =
+  (f: (pure: Pure_, val: A) => $Subtype<Settable<B>>) => ((pure: Pure_, obj: S) => $Subtype<Settable<T>>)
+
+
 export type Setter<S,T,A,B> = Setting<S,T,A,B>
 
 export type Setter_<S,A> = Setter<S,S,A,A>
@@ -43,6 +55,20 @@ export type Traversal_<S,A> = Traversal<S,S,A,A>
 type Pure_ = Function
 type Pure = <T>(_: T) => $Subtype<Applicative<T>>
 
+type Contravariant<A> = {
+  contramap<B>(f: (_: B) => A): Contravariant<B>
+}
+
+type Settable<A> = Applicative<A> & Distributive<A> & Traversable<A> & {
+  untainted(): A,
+}
+
+type Distributive<A> = Functor<A> & {
+  // TODO:
+  // distribute()
+}
+
+
 
 /*
  * Algebraic implementations
@@ -59,6 +85,9 @@ class Const<R,A> {
   map<B>(f: (_: A) => B): Const<R,B> {
     return new Const(this.value)
   }
+  contramap<B>(f: (_: B) => A): Const<R,B> {
+    return new Const(this.value)
+  }
 }
 
 class Identity<A> {
@@ -71,6 +100,9 @@ class Identity<A> {
   }
   map<B>(f: (_: A) => B): Identity<B> {
     return new Identity(f(this.value))
+  }
+  untainted(): A {
+    return this.value
   }
 }
 
@@ -114,4 +146,34 @@ function set<S,T,A,B>(setter: Setter<S,T,A,B>, val: B, obj: S): T {
 
 function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
   return setter((_, a) => Identity.of(f(a)))(Identity.of, obj).value
+}
+
+/* folding */
+
+// foldMapOf :: Profunctor p => Accessing p r s a -> p a r -> s -> r
+// foldMapOf l f = getConst #. l (Const #. f)
+
+// type AccessingProfunctor<M,S,A> =
+//   (_: Profunctor<A,Const<M,A>>) => ((pure: Pure_, _: S) => Const<M,S>)
+type AccessingProfunctor<M,S,A> = Getting<M,S,A>
+
+// class Endo<A> {
+//   appEndo: (_:A) => A;
+//   constructor(f: (_:A) => A) {
+//     this.appEndo = f
+//   }
+// }
+type Endo<A> = (_: A) => A
+
+function foldMapOf<R,S,A>(l: AccessingProfunctor<R,S,A>, f: Profunctor<A,R>, obj: S): R {
+  return rmap(c => c.value, l(rmap(Const.of, f)))
+}
+
+// foldrOf :: Profunctor p => Accessing p (Endo r) s a -> p a (r -> r) -> r -> s -> r
+// foldrOf l f z = flip appEndo z `rmap` foldMapOf l (Endo #. f)
+
+function foldrOf<R,S,A>(l: AccessingProfunctor<Endo<R>,S,A>, f: Profunctor<A, (_: R) => R>, z: R, obj: S): R {
+  return rmap(f_ => f_(z), foldMapOf.bind(null, l, f))(obj)
+
+  // return rmap(x => x.appEndo(z), foldMapOf(l, rmap(x => new Endo(x), f)))
 }

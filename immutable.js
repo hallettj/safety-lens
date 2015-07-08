@@ -1,14 +1,14 @@
 /* @flow */
 
-import { lens } from './lens'
+import { foldrOf, lens } from './lens'
+import { List, Map } from 'immutable'
 
-import type { List, Map } from 'immutable'
-import type { Lens_ } from './lens'
+import type { Getting, Lens_, Traversal_ } from './lens'
 
 export {
   index,
-  safeIndex,
   key,
+  toListOf,
 }
 
 /*
@@ -28,19 +28,16 @@ export {
  */
 
 
+function toListOf<S,A>(l: Getting<(_: List<A>) => List<A>,S,A>, obj: S): List<A> {
+  return foldrOf(l, a => as => as.unshift(a), List(), obj)
+}
+
 /* List */
 
 function index<A>(idx: number): Lens_<List<A>,A> {
   return lens(
     list => list.get(idx),
     (list, val) => list.set(idx, val)
-  )
-}
-
-function safeIndex<A>(idx: number): Lens_<List<A>,?A> {
-  return lens(
-    list => list.get(idx),
-    (list, val) => typeof val !== 'undefined' ? list.set(idx, val) : list
   )
 }
 

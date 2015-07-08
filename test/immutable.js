@@ -35,25 +35,6 @@ describe('immutable', () => {
     value: integer,
   }))
 
-  describe('safeIndex', lensLaws({
-    dataAndLens: pair(
-      arbitrary.list(integer),
-      arbitrary.fmap(i => safeIndex(i), integer(0, 10))
-    ),
-    value: integer,
-  }))
-
-  describe('nested safeIndex', lensLaws({
-    dataAndLens: pair(
-      arbitrary.list(arbitrary.list(integer)),
-      arbitrary.fmap(
-        ([i,j]) => compose(safeIndex(i), safeIndex(j)),
-        pair(integer(0, 10), integer(0, 10))
-      )
-    ),
-    value: integer,
-  }))
-
   describe('key', lensLaws({
     dataAndLens: dependent(
       arbitrary.nemap(integer),
