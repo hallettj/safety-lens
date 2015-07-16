@@ -8,20 +8,20 @@
  */
 
 export type Functor<A> = {
-  map<B>(f: (val: A) => B): $Subtype<Functor<B>>
+  map<B, FB: Functor<B>>(f: (val: A) => B): FB
 }
 
 export type Apply<F> = Functor<F> & {
-  ap<A,B>(x: $Subtype<Apply<A>>): $Subtype<Apply<B>>
+  ap<A,B, FB: Apply<B>>(x: Apply<A>): FB
 }
 
-export function ap<A,B,C>(f: $Subtype<Apply<(_: A) => B>>, x: $Subtype<Apply<A>>): $Subtype<Apply<B>> {
+export function ap<A,B,C, FB: Apply<B>>(f: Apply<(_: A) => B>, x: Apply<A>): FB {
   return f.ap(x)
 }
 
 export type Applicative<F> = {
-  ap<A,B>(x: $Subtype<Apply<A>>): $Subtype<Apply<B>>,
-  of<T>(val: T): $Subtype<Applicative<T>>,
+  ap<A,B, FB: Apply<B>>(x: Apply<A>): FB,
+  of<T, FT: Applicative<T>>(val: T): FT,
 }
 
 export type Foldable<A> = {
@@ -29,20 +29,20 @@ export type Foldable<A> = {
 }
 
 export type Traversable<A> = Functor<A> & {
-  sequence(pure: <T>(_: T) => $Subtype<Applicative<T>>): $Subtype<Applicative<Traversable<A>>>
+  sequence<FA: Apply<Traversable<A>>>(pure: <T,FT:Apply<T>>(_: T) => FT): FA
 }
 
-export function sequence<A>(
-  pure: <T>(_: T) => Applicative<T>,
-  t: $Subtype<Traversable<Applicative<A>>>
-): $Subtype<Applicative<Traversable<A>>> {
+export function sequence<A, FA: Apply<Traversable<A>>>(
+  pure: <T, FT: Apply<T>>(_: T) => FT,
+  t: Traversable<Apply<A>>
+): FA {
   return t.sequence(pure)
 }
 
-export function traverse<A,B>(
-  pure: <T>(_: T) => $Subtype<Applicative<T>>,
-  f: (_: A) => $Subtype<Applicative<B>>,
-  t: $Subtype<Traversable<A>>
-): $Subtype<Applicative<Traversable<B>>> {
+export function traverse<A,B, FTB: Apply<Traversable<B>>>(
+  pure: <T, FT: Apply<T>>(_: T) => FT,
+  f: <FB: Apply<B>>(_: A) => FB,
+  t: Traversable<A>
+): FTB {
   return sequence(pure, t.map(f))
 }

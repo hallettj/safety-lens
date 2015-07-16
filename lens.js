@@ -2,7 +2,7 @@
 
 import { rmap } from './src/Profunctor'
 
-import type { Applicative, Functor, Traversable } from './src/fantasy-land'
+import type { Apply, Functor, Traversable } from './src/fantasy-land'
 import type { Profunctor } from './src/Profunctor'
 
 export {
@@ -18,7 +18,8 @@ export {
 /* Types */
 
 export type Lens<S,T,A,B> =
-  (f: (pure: Pure_, val: A) => $Subtype<Functor<B>>) => ((pure: Pure_, obj: S) => $Subtype<Functor<T>>)
+  <FB: Functor<B>, FT: Functor<T>>
+  (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT)
 
 export type Lens_<S,A> = Lens<S,S,A,A>
 
@@ -29,11 +30,12 @@ export type Setting<S,T,A,B> =
   (f: (pure: Pure_, val: A) => Identity<B>) => ((pure: Pure_, obj: S) => Identity<T>)
 
 export type Getter<S,A> =
-  (f: (pure: Pure_, val: A) => ($Subtype<Contravariant<A> & Functor<A>>)) =>
-      ((pure: Pure_, obj: S) => ($Subtype<Contravariant<S> & Functor<S>>))
+  <FA: Contravariant<A> & Functor<A>, FS: Contravariant<S> & Functor<S>>
+  (f: (pure: Pure_, val: A) => FA) => ((pure: Pure_, obj: S) => FS)
 
 export type Setter<S,T,A,B> =
-  (f: (pure: Pure_, val: A) => $Subtype<Settable<B>>) => ((pure: Pure_, obj: S) => $Subtype<Settable<T>>)
+  <FB: Settable<B>, FT: Settable<T>>
+  (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT)
 
 
 export type Setter<S,T,A,B> = Setting<S,T,A,B>
@@ -41,7 +43,8 @@ export type Setter<S,T,A,B> = Setting<S,T,A,B>
 export type Setter_<S,A> = Setter<S,S,A,A>
 
 export type Traversal<S,T,A,B> =
-  (f: (pure: Pure, val: A) => $Subtype<Applicative<B>>) => ((pure: Pure, obj: S) => $Subtype<Applicative<T>>)
+  <FB: Apply<B>, FT: Apply<T>>
+  (f: (pure: Pure, val: A) => FB) => ((pure: Pure, obj: S) => FT)
 
 export type Traversal_<S,A> = Traversal<S,S,A,A>
 
@@ -53,13 +56,13 @@ export type Traversal_<S,A> = Traversal<S,S,A,A>
 // `Pure_` is "pure" for functors - will not be invoked unless further
 // constrained to `Pure`
 type Pure_ = Function
-type Pure = <T>(_: T) => $Subtype<Applicative<T>>
+type Pure = <T, FT: Apply<T>>(_: T) => FT
 
 type Contravariant<A> = {
-  contramap<B>(f: (_: B) => A): Contravariant<B>
+  contramap<B, FB: Contravariant<B>>(f: (_: B) => A): FB
 }
 
-type Settable<A> = Applicative<A> & Distributive<A> & Traversable<A> & {
+type Settable<A> = Apply<A> & Distributive<A> & Traversable<A> & {
   untainted(): A,
 }
 

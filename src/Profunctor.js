@@ -3,7 +3,7 @@
 // A Profunctor may be a function, or an object that implements a `dimap`
 // method.
 export type Profunctor<B,C> = ((_: B) => C) | {
-  dimap<A,D>(l: (_: A) => B, r: (_: C) => D): $Subtype<Profunctor<A,D>>,
+  dimap<A,D, FAD: Profunctor<A,D>>(l: (_: A) => B, r: (_: C) => D): FAD,
 }
 
 export {
@@ -12,20 +12,27 @@ export {
   rmap,
 }
 
-function dimap<A,B,C,D>(ab: (_: A) => B, cd: (_: C) => D, bc: Profunctor<B,C>): $Subtype<Profunctor<A,D>> {
+function dimap
+  <A,B,C,D, FAD: Profunctor<A,D>>
+  (ab: (_: A) => B, cd: (_: C) => D, bc: Profunctor<B,C>): FAD {
   if (typeof bc === 'function') {
-    return compose(compose(cd, bc), ab)
+    return (dimapFunction(ab, cd, bc): any)
   }
   else {
     return bc.dimap(ab, cd)
   }
 }
 
-function lmap<A,B,C>(f: (_: A) => B, p: Profunctor<B,C>): $Subtype<Profunctor<A,C>> {
+function dimapFunction<A,B,C,D>
+  (ab: (_: A) => B, cd: (_: C) => D, bc: (_: B) => C): Profunctor<A,D> {
+  return compose(cd, compose(bc, ab))
+}
+
+function lmap<A,B,C, FAC: Profunctor<A,C>>(f: (_: A) => B, p: Profunctor<B,C>): FAC {
   return dimap(f, id, p)
 }
 
-function rmap<A,B,C>(f: (_: B) => C, p: Profunctor<A,B>): $Subtype<Profunctor<A,C>> {
+function rmap<A,B,C, FAC: Profunctor<A,C>>(f: (_: B) => C, p: Profunctor<A,B>): FAC {
   return dimap(id, f, p)
 }
 
