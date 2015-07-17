@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { elements, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
 import { compose, get, over, set } from '../lens'
-import { index, safeIndex, key } from '../immutable'
+import { contains, index } from '../immutable'
 import * as laws from './laws'
 import { dependent } from './immutable/arbitrary'
 import * as arbitrary from './immutable/arbitrary'
@@ -35,11 +35,11 @@ describe('immutable', () => {
     value: integer,
   }))
 
-  describe('key', lensLaws({
+  describe('contains', lensLaws({
     dataAndLens: dependent(
       arbitrary.nemap(integer),
       map => elements(map.keySeq().toJS()).generator.map(
-        k => key(k)
+        k => contains(k)
       )
     ),
     value: integer,

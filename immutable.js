@@ -1,13 +1,13 @@
 /* @flow */
 
 import { foldrOf, lens } from './lens'
-import { List, Map } from 'immutable'
+import { Iterable, List, Set } from 'immutable'
 
 import type { Getting, Lens_, Traversal_ } from './lens'
 
 export {
+  contains,
   index,
-  key,
   toListOf,
 }
 
@@ -32,21 +32,29 @@ function toListOf<S,A>(l: Getting<(_: List<A>) => List<A>,S,A>, obj: S): List<A>
   return foldrOf(l, a => as => as.unshift(a), List(), obj)
 }
 
-/* List */
-
-function index<A>(idx: number): Lens_<List<A>,A> {
+function contains<V>(val: V): Lens_<Set<V>, boolean> {
   return lens(
-    list => list.get(idx),
-    (list, val) => list.set(idx, val)
+    obj => obj.has(val),
+    (obj, b) => b ? obj.add(val) : obj.remove(val)
   )
 }
 
-
-/* Map */
-
-function key<K,V>(k: K): Lens_<Map<K,V>,V> {
-  return lens(
-    map => map.get(k),
-    (map, val) => map.set(k, val)
-  )
+function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
+  return f => (pure, obj) => {
+    if (obj.has(idx)) {
+      return f(pure, obj.get(idx)).map(updatedValue => {
+        // Optimize update for certain types
+        if (typeof obj.set === 'function') {
+          return obj.set(idx, updatedValue)
+        }
+        else {
+          // This works for any Iterable, but might not give the most efficient update.
+          return obj.map((v, k) => k === idx ? updatedValue : v)
+        }
+      })
+    }
+    else {
+      return pure(obj)
+    }
+  }
 }

@@ -2,7 +2,6 @@
 
 import { rmap } from './src/Profunctor'
 
-import type { Apply, Functor, Traversable } from './src/fantasy-land'
 import type { Profunctor } from './src/Profunctor'
 
 export {
@@ -37,9 +36,6 @@ export type Setter<S,T,A,B> =
   <FB: Settable<B>, FT: Settable<T>>
   (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT)
 
-
-export type Setter<S,T,A,B> = Setting<S,T,A,B>
-
 export type Setter_<S,A> = Setter<S,S,A,A>
 
 export type Traversal<S,T,A,B> =
@@ -56,20 +52,12 @@ export type Traversal_<S,A> = Traversal<S,S,A,A>
 // `Pure_` is "pure" for functors - will not be invoked unless further
 // constrained to `Pure`
 type Pure_ = Function
-type Pure = <T, FT: Apply<T>>(_: T) => FT
 
 type Contravariant<A> = {
   contramap<B, FB: Contravariant<B>>(f: (_: B) => A): FB
 }
 
-type Settable<A> = Apply<A> & Distributive<A> & Traversable<A> & {
-  untainted(): A,
-}
-
-type Distributive<A> = Functor<A> & {
-  // TODO:
-  // distribute()
-}
+type Settable<A> = Apply<A> & Traversable<A>
 
 
 
@@ -79,36 +67,36 @@ type Distributive<A> = Functor<A> & {
 
 class Const<R,A> {
   value: R;
-  static of<X,T>(val: X): Const<X,T> {
-    return new Const(val)
-  }
   constructor(value: R) {
     this.value = value
   }
-  map<B>(f: (_: A) => B): Const<R,B> {
-    return new Const(this.value)
+  map<B, FB: Const<R,B>>(f: (_: A) => B): FB {
+    return (new Const(this.value): $Subtype<Const<*,*>>)
   }
-  contramap<B>(f: (_: B) => A): Const<R,B> {
-    return new Const(this.value)
+  contramap<B, FB: Const<R,B>>(f: (_: B) => A): FB {
+    return (new Const(this.value): $Subtype<Const<*,*>>)
   }
 }
 
 class Identity<A> {
   value: A;
-  static of<T>(val: T): Identity<T> {
-    return new Identity(val)
-  }
   constructor(value: A) {
     this.value = value
   }
-  map<B>(f: (_: A) => B): Identity<B> {
-    return new Identity(f(this.value))
+  map<B, FB: Identity<B>>(f: (_: A) => B): FB {
+    return (new Identity(f(this.value)): $Subtype<Identity<*>>)
   }
-  untainted(): A {
-    return this.value
+  ap<T,U, FU: Identity<U>>(x: Identity<T>): FU {
+    var f: any = this.value
+    return (new Identity(f(x.value)): $Subtype<Identity<*>>)
+  }
+  sequence<TA: Traversable<A>, FA: Identity<TA>>(pure: Pure): FA {
+    return pure(this)
   }
 }
 
+var constant: Pure = val => (new Const(val): $Subtype<Const<*,*>>)
+var identity: Pure = val => (new Identity(val): $Subtype<Identity<*>>)
 
 // Ordinary function composition
 function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
@@ -137,19 +125,20 @@ function to<S,A>(getter: (obj: S) => A): Getter<S,A> {
 }
 
 function get<S,A>(getter: Getting<A,S,A>, obj: S): A {
-  return getter((_, val) => Const.of(val))(Const.of, obj).value
+  return getter((_, val) => new Const(val))(constant, obj).value
 }
 
 
 /* setting */
 
-function set<S,T,A,B>(setter: Setter<S,T,A,B>, val: B, obj: S): T {
-  return setter((_, __) => Identity.of(val))(Identity.of, obj).value
+function set<S,T,A,B>(setter: Setting<S,T,A,B>, val: B, obj: S): T {
+  return setter((_, __) => new Identity(val))(identity, obj).value
 }
 
 function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
-  return setter((_, a) => Identity.of(f(a)))(Identity.of, obj).value
+  return setter((_, a) => new Identity(f(a)))(identity, obj).value
 }
+
 
 /* folding */
 
@@ -169,7 +158,7 @@ type AccessingProfunctor<M,S,A> = Getting<M,S,A>
 type Endo<A> = (_: A) => A
 
 function foldMapOf<R,S,A>(l: AccessingProfunctor<R,S,A>, f: Profunctor<A,R>, obj: S): R {
-  return rmap(c => c.value, l(rmap(Const.of, f)))
+  return rmap(c => c.value, l(rmap(constant, f)))
 }
 
 // foldrOf :: Profunctor p => Accessing p (Endo r) s a -> p a (r -> r) -> r -> s -> r
@@ -179,4 +168,9 @@ function foldrOf<R,S,A>(l: AccessingProfunctor<Endo<R>,S,A>, f: Profunctor<A, (_
   return rmap(f_ => f_(z), foldMapOf.bind(null, l, f))(obj)
 
   // return rmap(x => x.appEndo(z), foldMapOf(l, rmap(x => new Endo(x), f)))
+}
+
+function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
+  (pure: Pure, l: Traversal<S,T,A,B>, f: (p: Pure, _: A) => FB, obj: S): FT {
+  return l(f)(pure, obj)
 }
