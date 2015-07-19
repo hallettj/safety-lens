@@ -1,6 +1,6 @@
 
 import { array, bless, dict, generator, integer, nearray, show, shrink, suchthat } from 'jsverify'
-import { List, fromJS, is } from 'immutable'
+import { List, Set, fromJS, is } from 'immutable'
 import { index } from '../../immutable'
 
 import type { Arbitrary, Generator } from 'jsverify'
@@ -12,6 +12,8 @@ export {
   nelist,
   map,
   nemap,
+  set,
+  neset,
 }
 
 function dependent(arb: Arbitrary<A>, f: (a: A) => Generator<B>): Arbitrary<[A,B]> {
@@ -56,4 +58,18 @@ function map<K,V>(arbKey: Arbitrary<K>, arbVal: Arbitrary<V>): Arbitrary<Map<K,V
 
 function nemap<K,V>(arbKey: Arbitrary<K>, arbVal: Arbitrary<V>): Arbitrary<Map<K,V>> {
   return suchthat(map(arbKey, arbVal), m => !m.isEmpty())
+}
+
+function set<A>(arb: Arbitrary<A>): Arbitrary<Set<A>> {
+  return array(arb).smap(
+    xs => Set(xs),
+    xs => xs.toArray()
+  )
+}
+
+function neset<A>(arb: Arbitrary<A>): Arbitrary<Set<A>> {
+  return nearray(arb).smap(
+    xs => Set(xs),
+    xs => xs.toArray()
+  )
 }

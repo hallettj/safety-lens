@@ -1,6 +1,6 @@
 
 import { expect } from 'chai'
-import { elements, integer, pair } from 'jsverify'
+import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
 import { compose, get, over, set } from '../lens'
 import { contains, index } from '../immutable'
@@ -12,37 +12,12 @@ var lensLaws = laws.lensLaws.bind(null, is)
 
 describe('immutable', () => {
 
-  describe('index', lensLaws({
-    dataAndLens: dependent(
-      arbitrary.nelist(integer),
-      list => integer(0, list.size - 1).generator.map(i => index(i))
-    ),
-    value: integer,
-  }))
-
-  describe('nested index', lensLaws({
-    dataAndLens: dependent(
-      arbitrary.nelist(arbitrary.nelist(integer)),
-      list => {
-        var min = list.reduce((submin, sublist) => (
-          Math.min(submin, sublist.size)
-        ), Infinity)
-        return pair(integer(0, list.size - 1), integer(0, min - 1)).generator.map(
-          ([i, j]) => compose(index(i), index(j))
-        )
-      }
-    ),
-    value: integer,
-  }))
-
   describe('contains', lensLaws({
-    dataAndLens: dependent(
-      arbitrary.nemap(integer),
-      map => elements(map.keySeq().toJS()).generator.map(
-        k => contains(k)
-      )
+    dataAndLens: pair(
+      arbitrary.set(integer),
+      arbitrary.fmap(x => contains(x), integer)
     ),
-    value: integer,
+    value: bool,
   }))
 
   var aList = List([1,2,3,4])

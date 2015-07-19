@@ -71,10 +71,10 @@ class Const<R,A> {
     this.value = value
   }
   map<B, FB: Const<R,B>>(f: (_: A) => B): FB {
-    return (new Const(this.value): $Subtype<Const<*,*>>)
+    return (new Const(this.value): any)
   }
   contramap<B, FB: Const<R,B>>(f: (_: B) => A): FB {
-    return (new Const(this.value): $Subtype<Const<*,*>>)
+    return (new Const(this.value): any)
   }
 }
 
@@ -84,19 +84,19 @@ class Identity<A> {
     this.value = value
   }
   map<B, FB: Identity<B>>(f: (_: A) => B): FB {
-    return (new Identity(f(this.value)): $Subtype<Identity<*>>)
+    return (new Identity(f(this.value)): any)
   }
   ap<T,U, FU: Identity<U>>(x: Identity<T>): FU {
     var f: any = this.value
-    return (new Identity(f(x.value)): $Subtype<Identity<*>>)
+    return (new Identity(f(x.value)): any)
   }
   sequence<TA: Traversable<A>, FA: Identity<TA>>(pure: Pure): FA {
     return pure(this)
   }
 }
 
-var constant: Pure = val => (new Const(val): $Subtype<Const<*,*>>)
-var identity: Pure = val => (new Identity(val): $Subtype<Identity<*>>)
+var constant: Pure = val => (new Const(val): any)
+var identity: Pure = val => (new Identity(val): any)
 
 // Ordinary function composition
 function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
