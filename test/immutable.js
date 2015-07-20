@@ -3,9 +3,8 @@ import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
 import { compose, get, over, set } from '../lens'
-import { contains, index } from '../immutable'
+import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
-import { dependent } from './immutable/arbitrary'
 import * as arbitrary from './immutable/arbitrary'
 
 var lensLaws = laws.lensLaws.bind(null, is)
@@ -63,6 +62,12 @@ describe('immutable', () => {
       is( over(lens, x => x * 2, aNestedList), fromJS([[1, 2], [6, 4]]) )
     )
     .to.be.true
+  })
+
+  it('modifies all members of a list', () => {
+    expect(
+      is( over(traverse, x => x * 2, aList), List([2,4,6,8]) )
+    )
   })
 
 })

@@ -76,18 +76,17 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
 }
 
 function traverse<A,B, TB: Traversable<B>, FTB: Apply<TB>>(
-  pure: Pure,
-  f: <FB: Apply<B>>(_: A) => FB
-): (obj: Traversable<A>) => FTB {
-  return obj => {
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: Traversable<A>) => FTB {
+  return (pure, obj) => {
     if (obj instanceof Just || obj instanceof Nothing) {
-      return traverseMaybe(pure, f)(obj)
+      return traverseMaybe(f)(pure, obj)
     }
     else if (obj instanceof Iterable.Keyed) {
-      return traverseKeyedIterable(pure, f)(obj)
+      return traverseKeyedIterable(f)(pure, obj)
     }
     else if (obj instanceof Iterable){
-      return traverseIterable(pure, f)(obj)
+      return traverseIterable(f)(pure, obj)
     }
     else {
       throw new TypeError("No `traverse` implementation for "+ nameOfType(obj))
@@ -96,12 +95,11 @@ function traverse<A,B, TB: Traversable<B>, FTB: Apply<TB>>(
 }
 
 function traverseMaybe<A,B, FTB: Apply<Maybe<B>>>(
-  pure: Pure,
-  f: <FB: Apply<B>>(_: A) => FB
-): (obj: Maybe<A>) => FTB {
-  return obj => {
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: Maybe<A>) => FTB {
+  return (pure, obj) => {
     if (obj instanceof Just) {
-      return f(obj.value).map(just)
+      return f(pure, obj.value).map(just)
     }
     else {
       return pure(nothing)
@@ -112,24 +110,22 @@ function traverseMaybe<A,B, FTB: Apply<Maybe<B>>>(
 type UnkeyedIterable<T> = Seq.Indexed<T> | Seq.Set<T> | Iterable.Indexed<T> | Iterable.Set<T>
 
 function traverseIterable<A,B, TB: UnkeyedIterable<B>, FTB: Apply<TB>>(
-  pure: Pure,
-  f: <FB: Apply<B>>(_: A) => FB
-): (obj: UnkeyedIterable<A>) => FTB {
-  return obj => {
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: UnkeyedIterable<A>) => FTB {
+  return (pure, obj) => {
     var push = pure(coll => x => coll.concat(x))
     var emptyColl = obj.take(0)
-    return obj.reduce((ys, x) => ap(ap(push, ys), f(x)), pure(emptyColl))
+    return obj.reduce((ys, x) => ap(ap(push, ys), f(pure, x)), pure(emptyColl))
   }
 }
 
 function traverseKeyedIterable<A,B, TB: Iterable.Keyed<B>, FTB: Apply<TB>>(
-  pure: Pure,
-  f: <FB: Apply<B>>(_: A) => FB
-): (obj: Iterable.Keyed<A>) => FTB {
-  return obj => {
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: Iterable.Keyed<A>) => FTB {
+  return (pure, obj) => {
     var push = pure(coll => x => key => coll.concat([[key,x]]))
     var emptyColl = obj.take(0)
-    return obj.reduce((ys, x, key) => ap(ap(ap(push, ys), f(x)), pure(key)), pure(emptyColl))
+    return obj.reduce((ys, x, key) => ap(ap(ap(push, ys), f(pure, x)), pure(key)), pure(emptyColl))
   }
 }
 
