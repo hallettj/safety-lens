@@ -23,17 +23,17 @@ describe('immutable', () => {
   var aList = List([1,2,3,4])
   var aNestedList = fromJS([[1, 2], [3, 4]])
 
-  it('gets an index with `index`', () => {
-    expect(
-      get(index(1), aList)
-    )
-    .to.equal(2)
-  })
+  // it('gets an index with `index`', () => {
+  //   expect(
+  //     get(index(1), aList)
+  //   )
+  //   .to.equal(2)
+  // })
 
-  it('gets nested indexes via composition', () => {
-    var lens = compose(index(0), index(1))
-    expect(get(lens, aNestedList)).to.equal(2)
-  })
+  // it('gets nested indexes via composition', () => {
+  //   var lens = compose(index(0), index(1))
+  //   expect(get(lens, aNestedList)).to.equal(2)
+  // })
 
   it('sets an index with `index`', () => {
     expect(

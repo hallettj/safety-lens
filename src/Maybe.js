@@ -24,3 +24,13 @@ class Just<A> {
 class Nothing {
   map<B>(f: (_: any) => B): Nothing { return this }
 }
+
+var just: Pure = val => (new Just(val): any)
+var nothing: Nothing = new Nothing()
+
+export {
+  Just,
+  Nothing,
+  just,
+  nothing,
+}
