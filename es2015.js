@@ -1,6 +1,6 @@
 /* @flow */
 
-import { foldrOf, lens } from './lens'
+import { lens } from './lens'
 
 import type { Getting, Lens, Lens_ } from './lens'
 
@@ -10,18 +10,6 @@ export {
   _1,
   _2,
 }
-
-// toListOf :: Getting (Endo [a]) s a -> s -> [a]
-// toListOf l = foldrOf l (:) []
-
-function toArrayOf<S,A>(l: Getting<(_: A[]) => A[],S,A>, obj: S): A[] {
-  return foldrOf(l, a => as => {
-    var as_ = as.slice()
-    as_.unshift(a)
-    return as_
-  }, [], obj)
-}
-
 
 /* arrays */
 

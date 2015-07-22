@@ -7,6 +7,9 @@ class Just<A> {
   constructor(value: A) {
     this.value = value
   }
+  concat(other: Maybe<A>): Maybe<A> {
+    return this
+  }
   map<B>(f: (val: A) => B): Just<B> {
     return new Just(f(this.value))
   }
@@ -22,15 +25,32 @@ class Just<A> {
 }
 
 class Nothing {
+  concat<A>(other: Maybe<A>): Maybe<A> {
+    return other
+  }
   map<B>(f: (_: any) => B): Nothing { return this }
 }
 
 var just: Pure = val => (new Just(val): any)
 var nothing: Nothing = new Nothing()
 
+function traverseMaybe<A,B, FTB: Apply<Maybe<B>>>(
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: Maybe<A>) => FTB {
+  return (pure, obj) => {
+    if (obj instanceof Just) {
+      return f(pure, obj.value).map(just)
+    }
+    else {
+      return pure(nothing)
+    }
+  }
+}
+
 export {
   Just,
   Nothing,
   just,
   nothing,
+  traverseMaybe,
 }

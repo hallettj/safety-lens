@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
-import { compose, get, over, set } from '../lens'
+import { compose, get, getMaybe, over, set } from '../lens'
 import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -22,12 +22,20 @@ describe('immutable', () => {
   var aList = List([1,2,3,4])
   var aNestedList = fromJS([[1, 2], [3, 4]])
 
-  // it('gets an index with `index`', () => {
-  //   expect(
-  //     get(index(1), aList)
-  //   )
-  //   .to.equal(2)
-  // })
+  it('gets an index with `index`', () => {
+    console.log('getMaybe', getMaybe(index(1), aList))
+    expect(
+      getMaybe(index(1), aList)
+    )
+    .to.equal(2)
+  })
+
+  it('gets an undefined value from an out-of-range index', () => {
+    expect(
+      getMaybe(index(9), aList)
+    )
+    .to.be.undefined
+  })
 
   // it('gets nested indexes via composition', () => {
   //   var lens = compose(index(0), index(1))

@@ -1,51 +1,15 @@
 /* @flow */
 
-import { foldrOf, lens } from './lens'
-import { Just, Nothing, just, nothing } from './src/Maybe'
+import { lens } from './lens'
 import { ap } from './src/Applicative'
 import { Iterable, List, Set, Seq } from 'immutable'
 
 import type { Getting, Lens_, Traversal_ } from './lens'
-import type { Maybe } from './src/Maybe'
 
 export {
   contains,
   index,
-  toListOf,
   traverse,
-}
-
-/*
- * You can use the `traverse` function to get a `Traversal` from any
- * `Traversable` value.
- *
- * A `Traversal` is a specialized lens: it can act as a setter,
- * not as a getter.
- *
- * For example:
- *
- *     var xs = List([1,2,3])
- *
- *     over(traverse, x => x * 2, xs)
- *
- *     assert(is( xs, List([2,4,6]))
- *
- * You can use `traverseOf` with a `Traversal` to get values out of a structure
- * if the results are wrapped in an `Apply` type, such as `Maybe`.
- * For example, using `index`, which is a traversal:
- *
- *     import { just } from 'lens/src/Maybe'
- *
- *     var x = traverseOf(just, index(1), just, xs)
- *
- *     assert( x instanceof Just )
- *     assert( x.value === 2 )
- *
- */
-export type Traversable<T> = Maybe<T> | Iterable<any,T>
-
-function toListOf<S,A>(l: Getting<(_: List<A>) => List<A>,S,A>, obj: S): List<A> {
-  return foldrOf(l, a => as => as.unshift(a), List(), obj)
 }
 
 function contains<V>(val: V): Lens_<Set<V>, boolean> {
@@ -75,14 +39,45 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
   }
 }
 
-function traverse<A,B, TB: Traversable<B>, FTB: Apply<TB>>(
+
+/*
+ * You can use the `traverse` function to get a `Traversal` from any
+ * `Traversable` value.
+ *
+ * A `Traversal` is a specialized lens: it can act as a setter,
+ * but cannot be used as a getter with the `get` function.
+ *
+ * For example:
+ *
+ *     var xs = List([1,2,3])
+ *
+ *     over(traverse, x => x * 2, xs)
+ *
+ *     assert(is( xs, List([2,4,6]))
+ *
+ * You can use `getMaybe` with a `Traversal` to get values out of a structure
+ * wrapped in a `Maybe` result.
+ * For example, using `index`, which is a traversal:
+ *
+ *     import { Just, Nothing } from 'lens/src/Maybe'
+ *
+ *     var x = getMaybe(index(1), xs)
+ *
+ *     assert( x instanceof Just )
+ *     assert( x.value === 2 )
+ *
+ *     var y = getMaybe(index(9), xs)
+ *
+ *     assert( y instanceof Nothing )
+ *     assert( y.value === undefined )
+ *
+ */
+
+function traverse<A,K,B, TB: Iterable<K,B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: Traversable<A>) => FTB {
+): (pure: Pure, obj: Iterable<K,A>) => FTB {
   return (pure, obj) => {
-    if (obj instanceof Just || obj instanceof Nothing) {
-      return traverseMaybe(f)(pure, obj)
-    }
-    else if (obj instanceof Iterable.Keyed) {
+    if (obj instanceof Iterable.Keyed) {
       return traverseKeyedIterable(f)(pure, obj)
     }
     else if (obj instanceof Iterable){
@@ -90,19 +85,6 @@ function traverse<A,B, TB: Traversable<B>, FTB: Apply<TB>>(
     }
     else {
       throw new TypeError("No `traverse` implementation for "+ nameOfType(obj))
-    }
-  }
-}
-
-function traverseMaybe<A,B, FTB: Apply<Maybe<B>>>(
-  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: Maybe<A>) => FTB {
-  return (pure, obj) => {
-    if (obj instanceof Just) {
-      return f(pure, obj.value).map(just)
-    }
-    else {
-      return pure(nothing)
     }
   }
 }

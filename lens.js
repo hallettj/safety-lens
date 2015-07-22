@@ -1,17 +1,13 @@
 /* @flow */
 
-import { rmap } from './src/Profunctor'
-
-import type { Profunctor } from './src/Profunctor'
-
 export {
   compose,
   foldMapOf,
-  foldrOf,
   get,
   lens,
   over,
   set,
+  getMaybe,
 }
 
 /* Types */
@@ -43,6 +39,10 @@ export type Traversal<S,T,A,B> =
   (f: (pure: Pure, val: A) => FB) => ((pure: Pure, obj: S) => FT)
 
 export type Traversal_<S,A> = Traversal<S,S,A,A>
+
+export type Fold<M,S,A> =
+  <MM: Monoid<M>>
+  (f: (pure: Pure_, val: A) => Const<MM,A>) => ((pure: Pure_, obj: S) => Const<MM,S>)
 
 
 /*
@@ -142,35 +142,42 @@ function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
 
 /* folding */
 
-// foldMapOf :: Profunctor p => Accessing p r s a -> p a r -> s -> r
-// foldMapOf l f = getConst #. l (Const #. f)
-
-// type AccessingProfunctor<M,S,A> =
-//   (_: Profunctor<A,Const<M,A>>) => ((pure: Pure_, _: S) => Const<M,S>)
-type AccessingProfunctor<M,S,A> = Getting<M,S,A>
-
-// class Endo<A> {
-//   appEndo: (_:A) => A;
-//   constructor(f: (_:A) => A) {
-//     this.appEndo = f
-//   }
-// }
-type Endo<A> = (_: A) => A
-
-function foldMapOf<R,S,A>(l: AccessingProfunctor<R,S,A>, f: Profunctor<A,R>, obj: S): R {
-  return rmap(c => c.value, l(rmap(constant, f)))
-}
-
-// foldrOf :: Profunctor p => Accessing p (Endo r) s a -> p a (r -> r) -> r -> s -> r
-// foldrOf l f z = flip appEndo z `rmap` foldMapOf l (Endo #. f)
-
-function foldrOf<R,S,A>(l: AccessingProfunctor<Endo<R>,S,A>, f: Profunctor<A, (_: R) => R>, z: R, obj: S): R {
-  return rmap(f_ => f_(z), foldMapOf.bind(null, l, f))(obj)
-
-  // return rmap(x => x.appEndo(z), foldMapOf(l, rmap(x => new Endo(x), f)))
+function foldMapOf<R,S,A>(l: Getting<R,S,A>, f: (val: A) => R): (pure: Pure, obj: S) => R {
+  var wrapConst = (pure, val) => constant(f(val))
+  return (pure, obj) => l(wrapConst)(pure, obj).value
 }
 
 function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
   (pure: Pure, l: Traversal<S,T,A,B>, f: (p: Pure, _: A) => FB, obj: S): FT {
   return l(f)(pure, obj)
 }
+
+// Early iteration of Monoid / Semigroup concatenation
+function concat<A, MA: ?A | Semigroup<A>>(x: MA, y: MA): MA {
+  if (x && y) {
+    if (typeof x.concat == 'function') {
+      return (x: any).concat(y)
+    }
+    else {
+      return x
+    }
+  }
+  else {
+    return typeof x === 'undefined' ? y : x
+  }
+}
+
+function empty<A>(x: ?A | Monoid<A>): void | Monoid<A> {
+  if (x && typeof x.empty === 'function') {
+    return x.empty()
+  }
+  else {
+    return undefined
+  }
+}
+
+function getMaybe<S,A>(l: Getting<?A,S,A>, obj: S): ?A {
+  return foldMapOf(l, id, obj)(id, obj)
+}
+
+function id<A>(val: A): A { return val }
