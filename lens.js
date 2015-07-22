@@ -1,5 +1,9 @@
 /* @flow */
 
+import { Just, just, nothing } from './src/Maybe'
+
+import type { Maybe } from './src/Maybe'
+
 export {
   compose,
   foldMapOf,
@@ -40,9 +44,8 @@ export type Traversal<S,T,A,B> =
 
 export type Traversal_<S,A> = Traversal<S,S,A,A>
 
-export type Fold<M,S,A> =
-  <MM: Monoid<M>>
-  (f: (pure: Pure_, val: A) => Const<MM,A>) => ((pure: Pure_, obj: S) => Const<MM,S>)
+export type Fold<R,S,A> =
+  (f: (pure: Pure, val: A) => ApplyConst<R,A>) => ((pure: Pure, obj: S) => ApplyConst<R,S>)
 
 
 /*
@@ -78,6 +81,18 @@ class Const<R,A> {
   }
 }
 
+class ApplyConst<R:Monoid,A> extends Const<R,A> {
+  ap<T,U, FU: ApplyConst<R,U>>(x: ApplyConst<R,T>): FU {
+    return (new ApplyConst(this.value.concat(x.value)): any)
+  }
+  map<B, FB: ApplyConst<R,B>>(f: (_: A) => B): FB {
+    return (new ApplyConst(this.value): any)
+  }
+  contramap<B, FB: ApplyConst<R,B>>(f: (_: B) => A): FB {
+    return (new ApplyConst(this.value): any)
+  }
+}
+
 class Identity<A> {
   value: A;
   constructor(value: A) {
@@ -95,8 +110,13 @@ class Identity<A> {
   }
 }
 
-var constant: Pure = val => (new Const(val): any)
-var identity: Pure = val => (new Identity(val): any)
+function constant<T, FT: Const<T>>(val: T): FT { return (new Const(val): any) }
+function applyConstant<T: Monoid, FT: ApplyConst<T>>(val: T): FT {
+  return (new ApplyConst(val): any)
+}
+function identity<T, FT: Identity<T>>(val: T): FT {
+  return (new Identity(val): any)
+}
 
 // Ordinary function composition
 function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
@@ -142,9 +162,24 @@ function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
 
 /* folding */
 
-function foldMapOf<R,S,A>(l: Getting<R,S,A>, f: (val: A) => R): (pure: Pure, obj: S) => R {
-  var wrapConst = (pure, val) => constant(f(val))
-  return (pure, obj) => l(wrapConst)(pure, obj).value
+class First<A> {
+  value: Maybe<A>;
+  constructor(value: Maybe<A>) { this.value = value }
+  concat<M: First<A>>(other: Monoid): M {
+    return ((this.value instanceof Just ? this : other): any)
+  }
+  empty<M: First<A>>(): M {
+    return (new First(nothing): any)
+  }
+  static empty<T>(): First<T> {
+    return new First(nothing)
+  }
+}
+function first<A>(val: Maybe<A>): First<A> { return new First(val) }
+
+function foldMapOf<R:Monoid,S,A>(l: Fold<R,S,A>, f: (val: A) => R, mempty: R, obj: S): R {
+  var wrapConst = (pure, val) => applyConstant(f(val))
+  return l(wrapConst)(_ => applyConstant(mempty), obj).value
 }
 
 function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
@@ -152,32 +187,9 @@ function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
   return l(f)(pure, obj)
 }
 
-// Early iteration of Monoid / Semigroup concatenation
-function concat<A, MA: ?A | Semigroup<A>>(x: MA, y: MA): MA {
-  if (x && y) {
-    if (typeof x.concat == 'function') {
-      return (x: any).concat(y)
-    }
-    else {
-      return x
-    }
-  }
-  else {
-    return typeof x === 'undefined' ? y : x
-  }
-}
-
-function empty<A>(x: ?A | Monoid<A>): void | Monoid<A> {
-  if (x && typeof x.empty === 'function') {
-    return x.empty()
-  }
-  else {
-    return undefined
-  }
-}
-
-function getMaybe<S,A>(l: Getting<?A,S,A>, obj: S): ?A {
-  return foldMapOf(l, id, obj)(id, obj)
+function getMaybe<S,A>(l: Fold<First<A>,S,A>, obj: S): ?A {
+  function toMonoid<T>(val: T): First<T> { return first(just(val)) }
+  return foldMapOf(l, toMonoid, first(nothing), obj).value.value
 }
 
 function id<A>(val: A): A { return val }

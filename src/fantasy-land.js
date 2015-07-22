@@ -8,8 +8,18 @@
  */
 
 export {
+  concat,
+  empty,
   sequence,
   traverse,
+}
+
+function concat<M: Monoid>(x: M, y: M): M {
+  return x.concat(y)
+}
+
+function empty<M: Monoid>(x: M): M {
+  return x.empty()
 }
 
 function sequence<A, FA: Apply<Traversable<A>>>(

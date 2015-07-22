@@ -95,9 +95,9 @@ function traverseIterable<A,B, TB: UnkeyedIterable<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
 ): (pure: Pure, obj: UnkeyedIterable<A>) => FTB {
   return (pure, obj) => {
-    var push = pure(coll => x => coll.concat(x))
+    var push = x => coll => coll.concat(x)
     var emptyColl = obj.take(0)
-    return obj.reduce((ys, x) => ap(ap(push, ys), f(pure, x)), pure(emptyColl))
+    return obj.reduce((ys, x) => f(pure, x).map(push).ap(ys), pure(emptyColl))
   }
 }
 
@@ -105,9 +105,12 @@ function traverseKeyedIterable<A,B, TB: Iterable.Keyed<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
 ): (pure: Pure, obj: Iterable.Keyed<A>) => FTB {
   return (pure, obj) => {
-    var push = pure(coll => x => key => coll.concat([[key,x]]))
+    var push = x => key => coll => coll.concat([[key,x]])
     var emptyColl = obj.take(0)
-    return obj.reduce((ys, x, key) => ap(ap(ap(push, ys), f(pure, x)), pure(key)), pure(emptyColl))
+    return obj.reduce(
+      (ys, x, key) => f(pure, x).map(push).ap(pure(key)).ap(ys),
+      pure(emptyColl)
+    )
   }
 }
 

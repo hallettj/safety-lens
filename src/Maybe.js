@@ -7,9 +7,6 @@ class Just<A> {
   constructor(value: A) {
     this.value = value
   }
-  concat(other: Maybe<A>): Maybe<A> {
-    return this
-  }
   map<B>(f: (val: A) => B): Just<B> {
     return new Just(f(this.value))
   }
@@ -25,9 +22,7 @@ class Just<A> {
 }
 
 class Nothing {
-  concat<A>(other: Maybe<A>): Maybe<A> {
-    return other
-  }
+  value: void;
   map<B>(f: (_: any) => B): Nothing { return this }
 }
 

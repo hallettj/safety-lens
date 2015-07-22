@@ -23,7 +23,6 @@ describe('immutable', () => {
   var aNestedList = fromJS([[1, 2], [3, 4]])
 
   it('gets an index with `index`', () => {
-    console.log('getMaybe', getMaybe(index(1), aList))
     expect(
       getMaybe(index(1), aList)
     )
@@ -76,6 +75,13 @@ describe('immutable', () => {
     expect(
       is( over(traverse, x => x * 2, aList), List([2,4,6,8]) )
     )
+  })
+
+  it('gets nothing out of an empty list', () => {
+    console.log('gets nothing')
+    expect(
+      getMaybe(traverse, List())
+    ).to.be.undefined
   })
 
 })
