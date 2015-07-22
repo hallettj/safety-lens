@@ -2,7 +2,7 @@
 
 import { lens } from './lens'
 import { ap } from './src/Applicative'
-import { Iterable, List, Set, Seq } from 'immutable'
+import { Collection, Iterable, List, Set, Seq } from 'immutable'
 
 import type { Getting, Lens_, Traversal_ } from './lens'
 
@@ -77,7 +77,7 @@ function traverse<A,K,B, TB: Iterable<K,B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
 ): (pure: Pure, obj: Iterable<K,A>) => FTB {
   return (pure, obj) => {
-    if (obj instanceof Iterable.Keyed) {
+    if (obj instanceof Iterable.Keyed || obj instanceof Collection.Keyed) {
       return traverseKeyedIterable(f)(pure, obj)
     }
     else if (obj instanceof Iterable){

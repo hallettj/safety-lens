@@ -78,10 +78,16 @@ describe('immutable', () => {
   })
 
   it('gets nothing out of an empty list', () => {
-    console.log('gets nothing')
     expect(
       getMaybe(traverse, List())
     ).to.be.undefined
+  })
+
+  it('modifies all members of a map', () => {
+    var aMap = fromJS({ foo: 1, bar: 2, nao: 3 })
+    expect(
+      is( over(traverse, x => x * 2, aMap), fromJS({ foo: 2, bar: 4, nao: 6 }) )
+    )
   })
 
 })
