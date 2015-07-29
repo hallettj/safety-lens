@@ -8,10 +8,12 @@ export {
   compose,
   foldMapOf,
   get,
+  getter,
   lens,
   lookup,
   over,
   set,
+  traverseOf,
 }
 
 /* Types */
