@@ -55,18 +55,18 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
  *
  *     assert(is( xs, List([2,4,6]))
  *
- * You can use `getMaybe` with a `Traversal` to get values out of a structure
+ * You can use `lookup` with a `Traversal` to get values out of a structure
  * wrapped in a `Maybe` result.
  * For example, using `index`, which is a traversal:
  *
  *     import { Just, Nothing } from 'lens/src/Maybe'
  *
- *     var x = getMaybe(index(1), xs)
+ *     var x = lookup(index(1), xs)
  *
  *     assert( x instanceof Just )
  *     assert( x.value === 2 )
  *
- *     var y = getMaybe(index(9), xs)
+ *     var y = lookup(index(9), xs)
  *
  *     assert( y instanceof Nothing )
  *     assert( y.value === undefined )

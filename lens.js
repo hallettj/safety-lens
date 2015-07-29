@@ -9,9 +9,9 @@ export {
   foldMapOf,
   get,
   lens,
+  lookup,
   over,
   set,
-  getMaybe,
 }
 
 /* Types */
@@ -123,9 +123,11 @@ function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
   return x => f(g(x))
 }
 
-
 /* lenses */
 
+/*
+ * Creates a lens from a getter and setter function.
+ */
 function lens<S,T,A,B>(
   getter: (obj: S) => A,
   setter: (obj: S, val: B) => T
@@ -194,7 +196,14 @@ function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
   return l(f)(pure, obj)
 }
 
-function getMaybe<S,A>(l: Fold<First<A>,S,A>, obj: S): ?A {
+/*
+ * `lookup` is like `get`, except that the result might be `undefined`.
+ *
+ * `get` cannot be used with `Traversal` or `Fold` lenses.
+ * In these cases, use `lookup` instead.
+ *
+ */
+function lookup<S,A>(l: Fold<First<A>,S,A>, obj: S): ?A {
   function toMonoid<T>(val: T): First<T> { return first(just(val)) }
   return foldMapOf(l, toMonoid, first(nothing), obj).value.value
 }

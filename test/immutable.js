@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
-import { compose, get, getMaybe, over, set } from '../lens'
+import { compose, get, lookup, over, set } from '../lens'
 import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -24,14 +24,14 @@ describe('immutable', () => {
 
   it('gets an index with `index`', () => {
     expect(
-      getMaybe(index(1), aList)
+      lookup(index(1), aList)
     )
     .to.equal(2)
   })
 
   it('gets an undefined value from an out-of-range index', () => {
     expect(
-      getMaybe(index(9), aList)
+      lookup(index(9), aList)
     )
     .to.be.undefined
   })
@@ -79,7 +79,7 @@ describe('immutable', () => {
 
   it('gets nothing out of an empty list', () => {
     expect(
-      getMaybe(traverse, List())
+      lookup(traverse, List())
     ).to.be.undefined
   })
 

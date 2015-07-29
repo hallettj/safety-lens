@@ -21,11 +21,11 @@ To get the second element from the first sub-list,
 you could use this lens:
 
 ```js
-import { compose, get, set, over } from 'lens'
+import { compose, get, lookup, set, over } from 'lens'
 import { index } from 'lens/immutable'
 
 var lens = compose(index(0), index(1))
-assert( get(lens, data) === 2 )
+assert( lookup(lens, data) === 2 )
 ```
 
 And to update the same position, use the same lens:
