@@ -2,7 +2,7 @@
 
 import { lens } from './lens'
 
-import type { Getting, Lens, Lens_ } from './lens'
+import type { Lens, Lens_, Traversal_ } from './lens'
 
 export {
   index,
@@ -13,11 +13,17 @@ export {
 
 /* arrays */
 
-function index<A>(idx: number): Lens_<A[],A> {
-  return lens(
-    list => list[idx],
-    (list, val) => list.map((v, i) => i === idx ? val : v)
-  )
+function index<A>(idx: number): Traversal_<A[],A> {
+  return f => (pure, array) => {
+    if (typeof array[idx] !== 'undefined') {
+      return f(pure, array[idx]).map(updatedValue => (
+        array.map((v, i) => i === idx ? updatedValue : v)
+      ))
+    }
+    else {
+      return pure(array)
+    }
+  }
 }
 
 

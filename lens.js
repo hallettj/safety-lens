@@ -118,7 +118,7 @@ function identity<T, FT: Identity<T>>(val: T): FT {
   return (new Identity(val): any)
 }
 
-// Ordinary function composition
+// Ordinary function composition - also works to compose lenses
 function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
   return x => f(g(x))
 }
@@ -138,12 +138,19 @@ function lens<S,T,A,B>(
 
 /* getting */
 
-function to<S,A>(getter: (obj: S) => A): Getter<S,A> {
+/*
+ * Turns an ordinary function into a getter
+ */
+function getter<S,A>(getter: (obj: S) => A): Getter<S,A> {
   return f => (pure, obj) => (
     f(pure, getter(obj)).map(val => obj)
   )
 }
 
+/*
+ * Given a getter (which is a specialized lens), and data structure, gets
+ * a value out of the data structure.
+ */
 function get<S,A>(getter: Getting<A,S,A>, obj: S): A {
   return getter((_, val) => new Const(val))(constant, obj).value
 }
