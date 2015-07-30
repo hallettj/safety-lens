@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
-import { compose, get, lookup, over, set } from '../lens'
+import { compose, foldrOf, get, lookup, over, set } from '../lens'
 import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -88,6 +88,13 @@ describe('immutable', () => {
     expect(
       is( over(traverse, x => x * 2, aMap), fromJS({ foo: 2, bar: 4, nao: 6 }) )
     )
+  })
+
+  it('computes a fold of a list', () => {
+    expect(
+      foldrOf(traverse, (x,y) => x+y, 0, aList)
+    )
+    .to.equal(10)
   })
 
 })

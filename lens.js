@@ -7,6 +7,7 @@ import type { Maybe } from './src/Maybe'
 export {
   compose,
   foldMapOf,
+  foldrOf,
   get,
   getter,
   lens,
@@ -147,7 +148,7 @@ function lens<S,T,A,B>(
  */
 function getter<S,A>(getter: (obj: S) => A): Getter<S,A> {
   return f => (pure, obj) => (
-    f(pure, getter(obj)).map(val => obj)
+    f(pure, getter(obj)).map(_ => obj)
   )
 }
 
@@ -171,8 +172,17 @@ function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
 }
 
 
+/* traversing */
+
+function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
+  (pure: Pure, l: Traversal<S,T,A,B>, f: (p: Pure, _: A) => FB, obj: S): FT {
+  return l(f)(pure, obj)
+}
+
+
 /* folding */
 
+// `First` is one possible Monoid implementation for `Maybe`
 class First<A> {
   value: Maybe<A>;
   constructor(value: Maybe<A>) { this.value = value }
@@ -182,9 +192,6 @@ class First<A> {
   empty<M: First<A>>(): M {
     return (new First(nothing): any)
   }
-  static empty<T>(): First<T> {
-    return new First(nothing)
-  }
 }
 function first<A>(val: Maybe<A>): First<A> { return new First(val) }
 
@@ -193,9 +200,24 @@ function foldMapOf<R:Monoid,S,A>(l: Fold<R,S,A>, f: (val: A) => R, mempty: R, ob
   return l(wrapConst)(_ => applyConstant(mempty), obj).value
 }
 
-function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
-  (pure: Pure, l: Traversal<S,T,A,B>, f: (p: Pure, _: A) => FB, obj: S): FT {
-  return l(f)(pure, obj)
+// `Endo` turns a function into a Monoid
+class Endo<A> {
+  f: (_: A) => A;
+  constructor(f: (_: A) => A) { this.f = f }
+  concat<M: Endo<A>>(other: Monoid): M {
+    return (new Endo(compose(this.f, (other: any).f)): any)
+  }
+  empty<M: Endo<A>>(): M {
+    return (new Endo(id): any)
+  }
+}
+function endo<A>(f: (_: A) => A): Endo<A> { return new Endo(f) }
+
+function foldrOf<R,S,A>(
+  l: Fold<Endo<R>,S,A>, f: (val: A, accum: R) => R, init: R, obj: S
+): R {
+  var curried = val => accum => f(val, accum)
+  return foldMapOf(l, compose(endo, curried), new Endo(id), obj).f(init)
 }
 
 /*
