@@ -1,9 +1,9 @@
 
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
-import { List, fromJS, is } from 'immutable'
-import { compose, filtering, foldrOf, get, lookup, over, set, sumOf } from '../lens'
-import { contains, index, traverse } from '../immutable'
+import { List, Record, fromJS, is } from 'immutable'
+import { compose, filtering, foldrOf, get, lookup, mapping, over, set, sumOf } from '../lens'
+import { contains, field, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
 
@@ -19,8 +19,34 @@ describe('immutable', () => {
     value: bool,
   }))
 
+  type Foo = { foo: number, bar: number, baz: number }
+  var FooRecord = Record({ foo: 1, bar: 2, baz: 3 })
+  var foo: Record<Foo> = new FooRecord()
+
   var aList = List([1,2,3,4])
   var aNestedList = fromJS([[1, 2], [3, 4]])
+
+  it('gets a value from a record', () => {
+    expect(
+      get(field('foo'), foo)
+    )
+    .to.equal(1)
+  })
+
+  it('sets a value on a record', () => {
+    expect(
+      is( set(field('bar'), 7, foo), new FooRecord({ bar: 7 }) )
+    )
+    .to.be.true
+  })
+
+  it('maps a value on get', () => {
+    var lens = compose(field('bar'), mapping(x => x*2))
+    expect(
+      get(lens, foo)
+    )
+    .to.equal(4)
+  })
 
   it('gets an index with `index`', () => {
     expect(
@@ -36,10 +62,10 @@ describe('immutable', () => {
     .to.be.undefined
   })
 
-  // it('gets nested indexes via composition', () => {
-  //   var lens = compose(index(0), index(1))
-  //   expect(get(lens, aNestedList)).to.equal(2)
-  // })
+  it('gets nested indexes via composition', () => {
+    var lens = compose(index(0), index(1))
+    expect(lookup(lens, aNestedList)).to.equal(2)
+  })
 
   it('sets an index with `index`', () => {
     expect(
@@ -134,6 +160,13 @@ describe('immutable', () => {
       sumOf(compose(traverse, compose(traverse, filtering(even))), aNestedList)
     )
     .to.equal(6)
+  })
+
+  it('maps items on lookup', () => {
+    expect(
+      lookup(compose(index(1), mapping(x => x*2)), aList)
+    )
+    .to.equal(4)
   })
 
 })

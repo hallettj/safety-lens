@@ -13,6 +13,7 @@ export {
   getter,
   lens,
   lookup,
+  mapping,
   over,
   set,
   sumOf,
@@ -142,6 +143,13 @@ function lens<S,T,A,B>(
   )
 }
 
+function mapping<S,T>(transform: (val: S) => T): Lens<S,T,T,T> {
+  return f => (pure, obj) => (
+    f(pure, transform(obj)).map(id)
+  )
+  // TODO: `.map(id)` suppresses a (hopefully unimportant) type error
+}
+
 
 /* getting */
 
@@ -185,6 +193,7 @@ function filtering<S>(predicate: (val: S) => boolean): Traversal_<S,S> {
   return f => (pure, obj) => (
     predicate(obj) ? f(pure, obj).map(id) : pure(obj)
   )
+  // TODO: `.map(id)` suppresses a (hopefully unimportant) type error
 }
 
 

@@ -2,14 +2,22 @@
 
 import { lens } from './lens'
 import { ap } from './src/Applicative'
-import { Collection, Iterable, List, Set, Seq } from 'immutable'
+import { Collection, Iterable, List, Record, Set, Seq } from 'immutable'
 
 import type { Getting, Lens_, Traversal_ } from './lens'
 
 export {
   contains,
+  field,
   index,
   traverse,
+}
+
+function field<S:Object,A>(name: $Enum<S>): Lens_<Record<S>,A> {
+  return lens(
+    obj => obj.get(name),
+    (obj, val) => obj.set(name, val)
+  )
 }
 
 function contains<V>(val: V): Lens_<Set<V>, boolean> {
