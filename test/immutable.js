@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
-import { compose, foldrOf, get, lookup, over, set } from '../lens'
+import { compose, foldrOf, get, lookup, over, set, sumOf } from '../lens'
 import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -93,6 +93,20 @@ describe('immutable', () => {
   it('computes a fold of a list', () => {
     expect(
       foldrOf(traverse, (x,y) => x+y, 0, aList)
+    )
+    .to.equal(10)
+  })
+
+  it('computes the sum of a list', () => {
+    expect(
+      sumOf(traverse, aList)
+    )
+    .to.equal(10)
+  })
+
+  it('computes the sum of nested lists', () => {
+    expect(
+      sumOf(compose(traverse, traverse), aNestedList)
     )
     .to.equal(10)
   })

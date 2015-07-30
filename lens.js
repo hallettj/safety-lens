@@ -14,6 +14,7 @@ export {
   lookup,
   over,
   set,
+  sumOf,
   traverseOf,
 }
 
@@ -218,6 +219,10 @@ function foldrOf<R,S,A>(
 ): R {
   var curried = val => accum => f(val, accum)
   return foldMapOf(l, compose(endo, curried), new Endo(id), obj).f(init)
+}
+
+function sumOf<S>(l: Fold<Endo<number>,S,number>, obj: S): number {
+  return foldrOf(l, (x,y) => x+y, 0, obj)
 }
 
 /*
