@@ -6,6 +6,7 @@ import type { Maybe } from './src/Maybe'
 
 export {
   compose,
+  filtering,
   foldMapOf,
   foldrOf,
   get,
@@ -178,6 +179,12 @@ function over<S,T,A,B>(setter: Setting<S,T,A,B>, f: (val: A) => B, obj: S): T {
 function traverseOf<S,T,A,B, FB: Apply<B>, FT: Apply<T>>
   (pure: Pure, l: Traversal<S,T,A,B>, f: (p: Pure, _: A) => FB, obj: S): FT {
   return l(f)(pure, obj)
+}
+
+function filtering<S>(predicate: (val: S) => boolean): Traversal_<S,S> {
+  return f => (pure, obj) => (
+    predicate(obj) ? f(pure, obj).map(id) : pure(obj)
+  )
 }
 
 

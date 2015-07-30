@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, fromJS, is } from 'immutable'
-import { compose, foldrOf, get, lookup, over, set, sumOf } from '../lens'
+import { compose, filtering, foldrOf, get, lookup, over, set, sumOf } from '../lens'
 import { contains, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -109,6 +109,31 @@ describe('immutable', () => {
       sumOf(compose(traverse, traverse), aNestedList)
     )
     .to.equal(10)
+  })
+
+  it('filters a list', () => {
+    var even = x => x % 2 == 0
+    expect(
+      sumOf(compose(traverse, filtering(even)), aList)
+    )
+    .to.equal(6)
+  })
+
+  it('updates positions of a list according to a filter', () => {
+    var even = x => x % 2 == 0
+    var aList = fromJS([1,2,3,4])
+    expect(
+      is( over(compose(traverse, filtering(even)), x => x*2, aList), fromJS([1,4,3,8]) )
+    )
+    .to.be.true
+  })
+
+  it('filters items in nested lists', () => {
+    var even = x => x % 2 == 0
+    expect(
+      sumOf(compose(traverse, compose(traverse, filtering(even))), aNestedList)
+    )
+    .to.equal(6)
   })
 
 })
