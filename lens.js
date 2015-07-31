@@ -5,6 +5,7 @@ import { Just, just, nothing } from './src/Maybe'
 import type { Maybe } from './src/Maybe'
 
 export {
+  Endo,
   compose,
   filtering,
   foldMapOf,

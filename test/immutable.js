@@ -1,11 +1,15 @@
 
-import { expect } from 'chai'
+import chai from 'chai'
+import chaiImmutable from 'chai-immutable'
 import { bool, integer, pair } from 'jsverify'
-import { List, Record, fromJS, is } from 'immutable'
+import { List, Record, Stack, fromJS, is } from 'immutable'
 import { compose, filtering, foldrOf, get, lookup, over, set, sumOf, to } from '../lens'
-import { contains, field, index, traverse } from '../immutable'
+import { contains, field, index, toListOf, toStackOf, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
+
+var expect = chai.expect
+chai.use(chaiImmutable)
 
 var lensLaws = laws.lensLaws.bind(null, is)
 
@@ -35,9 +39,11 @@ describe('immutable', () => {
 
   it('sets a value on a record', () => {
     expect(
-      is( set(field('bar'), 7, foo), new FooRecord({ bar: 7 }) )
+      set(field('bar'), 7, foo)
     )
-    .to.be.true
+    .to.equal(
+      new FooRecord({ bar: 7 })
+    )
   })
 
   it('maps a value on get', () => {
@@ -69,32 +75,40 @@ describe('immutable', () => {
 
   it('sets an index with `index`', () => {
     expect(
-      is( set(index(1), 5, aList), List([1,5,3,4]) )
+      set(index(1), 5, aList)
     )
-    .to.be.true
+    .to.equal(
+      List([1,5,3,4])
+    )
   })
 
   it('sets nested indexes via composition', () => {
     var lens = compose(index(0), index(1))
     expect(
-      is( set(lens, 5, aNestedList), fromJS([[1, 5], [3, 4]]) )
+      set(lens, 5, aNestedList)
     )
-    .to.be.true
+    .to.equal(
+      fromJS([[1, 5], [3, 4]])
+    )
   })
 
   it('modifies an index with a function with `index`', () => {
     expect(
-      is( over(index(2), x => x * 2, aList), List([1,2,6,4]) )
+      over(index(2), x => x * 2, aList)
     )
-    .to.be.true
+    .to.equal(
+      List([1,2,6,4])
+    )
   })
 
   it('modifies nested indexes via composition', () => {
     var lens = compose(index(1), index(0))
     expect(
-      is( over(lens, x => x * 2, aNestedList), fromJS([[1, 2], [6, 4]]) )
+      over(lens, x => x * 2, aNestedList)
     )
-    .to.be.true
+    .to.equal(
+      fromJS([[1, 2], [6, 4]])
+    )
   })
 
   it('modifies all members of a list', () => {
@@ -149,9 +163,11 @@ describe('immutable', () => {
     var even = x => x % 2 == 0
     var aList = fromJS([1,2,3,4])
     expect(
-      is( over(compose(traverse, filtering(even)), x => x*2, aList), fromJS([1,4,3,8]) )
+      over(compose(traverse, filtering(even)), x => x*2, aList)
     )
-    .to.be.true
+    .to.equal(
+      fromJS([1,4,3,8])
+    )
   })
 
   it('filters items in nested lists', () => {
@@ -167,6 +183,30 @@ describe('immutable', () => {
       lookup(compose(index(1), to(x => x*2)), aList)
     )
     .to.equal(4)
+  })
+
+  it('produces a list from a traversal', () => {
+    var even = x => x % 2 == 0
+    var lens = compose(traverse, compose(traverse, filtering(even)))
+    console.log(toListOf(lens, aNestedList))
+    expect(
+      toListOf(lens, aNestedList)
+    )
+    .to.equal(
+      fromJS([2,4])
+    )
+  })
+
+  it('produces a stack from a traversal', () => {
+    var even = x => x % 2 == 0
+    var lens = compose(traverse, compose(traverse, filtering(even)))
+    console.log(toStackOf(lens, aNestedList))
+    expect(
+      toStackOf(lens, aNestedList)
+    )
+    .to.equal(
+      Stack([2,4])
+    )
   })
 
 })

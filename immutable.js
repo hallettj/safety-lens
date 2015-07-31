@@ -1,17 +1,21 @@
 /* @flow */
 
-import { lens } from './lens'
+import { foldrOf, lens } from './lens'
 import { ap } from './src/Applicative'
-import { Collection, Iterable, List, Record, Set, Seq } from 'immutable'
+import { Collection, Iterable, List, Record, Set, Seq, Stack } from 'immutable'
 
-import type { Getting, Lens_, Traversal_ } from './lens'
+import type { Endo, Getting, Lens_, Traversal_ } from './lens'
 
 export {
   contains,
   field,
   index,
+  toListOf,
+  toStackOf,
   traverse,
 }
+
+/* lenses */
 
 function field<S:Object,A>(name: $Enum<S>): Lens_<Record<S>,A> {
   return lens(
@@ -26,6 +30,9 @@ function contains<V>(val: V): Lens_<Set<V>, boolean> {
     (obj, b) => b ? obj.add(val) : obj.remove(val)
   )
 }
+
+
+/* traversals */
 
 function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
   return f => (pure, obj) => {
@@ -46,7 +53,6 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
     }
   }
 }
-
 
 /*
  * You can use the `traverse` function to get a `Traversal` from any
@@ -103,9 +109,9 @@ function traverseIterable<A,B, TB: UnkeyedIterable<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
 ): (pure: Pure, obj: UnkeyedIterable<A>) => FTB {
   return (pure, obj) => {
-    var push = x => coll => coll.concat(x)
+    var cons = consImpl(obj)
     var emptyColl = obj.take(0)
-    return obj.reduce((ys, x) => f(pure, x).map(push).ap(ys), pure(emptyColl))
+    return obj.reduceRight((ys, x) => f(pure, x).map(cons).ap(ys), pure(emptyColl))
   }
 }
 
@@ -113,15 +119,55 @@ function traverseKeyedIterable<A,B, TB: Iterable.Keyed<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
 ): (pure: Pure, obj: Iterable.Keyed<A>) => FTB {
   return (pure, obj) => {
-    var push = x => key => coll => coll.concat([[key,x]])
+    var cons = consKeyedImpl(obj)
     var emptyColl = obj.take(0)
-    return obj.reduce(
-      (ys, x, key) => f(pure, x).map(push).ap(pure(key)).ap(ys),
+    return obj.reduceRight(
+      (ys, x, key) => f(pure, x).map(cons).ap(pure(key)).ap(ys),
       pure(emptyColl)
     )
   }
 }
 
+function consImpl<A,S: UnkeyedIterable<A>>(coll: S): (val: A) => (coll: S) => S {
+  if (coll instanceof List || coll instanceof Stack) {
+    return val => coll => coll.unshift(val)
+  }
+  else if (coll instanceof Set) {
+    return val => coll => coll.add(val)
+  }
+  else {
+    var emptyColl = coll.take(0)
+    return val => coll => emptyColl.concat(val).concat(coll)
+  }
+}
+
+function consKeyedImpl<A,K,S: Iterable.Keyed<K,A>>(coll: S):
+  (val: A) => (key: K) => (coll: S) => S {
+  if (coll instanceof Map) {
+    return val => key => coll => coll.set(key, val)
+  }
+  else {
+    var emptyColl = coll.take(0)
+    return val => key => coll => emptyColl.concat([[key,val]]).concat(coll)
+  }
+}
+
 function nameOfType(obj: Object) {
   return obj && obj.constructor && obj.constructor.name ? obj.constructor.name : String(obj)
+}
+
+
+/* traversing */
+
+function toListOf<S,A>(l: Getting< Endo<List<A>>,S,A>, obj: S): List<A> {
+  return foldrOf(l, (x, xs) => (console.log(x, xs), xs.unshift(x)), List(), obj)
+}
+
+/*
+ * Constructing a stack using foldr might be more efficient than constructing
+ * a list, since Immutable's Stack is implemented as a linked list, while List
+ * is implemented as a tree-backed vector.
+ */
+function toStackOf<S,A>(l: Getting<Endo<Stack<A>>,S,A>, obj: S): Stack<A> {
+  return foldrOf(l, (x, xs) => xs.unshift(x), Stack(), obj)
 }
