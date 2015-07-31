@@ -11,9 +11,9 @@ export {
   foldrOf,
   get,
   getter,
+  getter as to,
   lens,
   lookup,
-  mapping,
   over,
   set,
   sumOf,
@@ -141,13 +141,6 @@ function lens<S,T,A,B>(
   return f => (pure, obj) => (
     f(pure, getter(obj)).map(val => setter(obj, val))
   )
-}
-
-function mapping<S,T>(transform: (val: S) => T): Lens<S,T,T,T> {
-  return f => (pure, obj) => (
-    f(pure, transform(obj)).map(id)
-  )
-  // TODO: `.map(id)` suppresses a (hopefully unimportant) type error
 }
 
 

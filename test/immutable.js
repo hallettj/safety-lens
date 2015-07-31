@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { bool, integer, pair } from 'jsverify'
 import { List, Record, fromJS, is } from 'immutable'
-import { compose, filtering, foldrOf, get, lookup, mapping, over, set, sumOf } from '../lens'
+import { compose, filtering, foldrOf, get, lookup, over, set, sumOf, to } from '../lens'
 import { contains, field, index, traverse } from '../immutable'
 import * as laws from './laws'
 import * as arbitrary from './immutable/arbitrary'
@@ -41,7 +41,7 @@ describe('immutable', () => {
   })
 
   it('maps a value on get', () => {
-    var lens = compose(field('bar'), mapping(x => x*2))
+    var lens = compose(field('bar'), to(x => x*2))
     expect(
       get(lens, foo)
     )
@@ -164,7 +164,7 @@ describe('immutable', () => {
 
   it('maps items on lookup', () => {
     expect(
-      lookup(compose(index(1), mapping(x => x*2)), aList)
+      lookup(compose(index(1), to(x => x*2)), aList)
     )
     .to.equal(4)
   })
