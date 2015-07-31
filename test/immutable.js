@@ -188,7 +188,6 @@ describe('immutable', () => {
   it('produces a list from a traversal', () => {
     var even = x => x % 2 == 0
     var lens = compose(traverse, compose(traverse, filtering(even)))
-    console.log(toListOf(lens, aNestedList))
     expect(
       toListOf(lens, aNestedList)
     )
@@ -200,7 +199,6 @@ describe('immutable', () => {
   it('produces a stack from a traversal', () => {
     var even = x => x % 2 == 0
     var lens = compose(traverse, compose(traverse, filtering(even)))
-    console.log(toStackOf(lens, aNestedList))
     expect(
       toStackOf(lens, aNestedList)
     )

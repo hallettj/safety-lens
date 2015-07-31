@@ -4,7 +4,7 @@ import { foldrOf, lens } from './lens'
 import { ap } from './src/Applicative'
 import { Collection, Iterable, List, Record, Set, Seq, Stack } from 'immutable'
 
-import type { Endo, Getting, Lens_, Traversal_ } from './lens'
+import type { Endo, Fold, Lens_, Traversal_ } from './lens'
 
 export {
   contains,
@@ -159,8 +159,8 @@ function nameOfType(obj: Object) {
 
 /* traversing */
 
-function toListOf<S,A>(l: Getting< Endo<List<A>>,S,A>, obj: S): List<A> {
-  return foldrOf(l, (x, xs) => (console.log(x, xs), xs.unshift(x)), List(), obj)
+function toListOf<S,A>(l: Fold<Endo<List<A>>,S,A>, obj: S): List<A> {
+  return foldrOf(l, (x, xs) => xs.unshift(x), List(), obj)
 }
 
 /*
@@ -168,6 +168,6 @@ function toListOf<S,A>(l: Getting< Endo<List<A>>,S,A>, obj: S): List<A> {
  * a list, since Immutable's Stack is implemented as a linked list, while List
  * is implemented as a tree-backed vector.
  */
-function toStackOf<S,A>(l: Getting<Endo<Stack<A>>,S,A>, obj: S): Stack<A> {
+function toStackOf<S,A>(l: Fold<Endo<Stack<A>>,S,A>, obj: S): Stack<A> {
   return foldrOf(l, (x, xs) => xs.unshift(x), Stack(), obj)
 }
