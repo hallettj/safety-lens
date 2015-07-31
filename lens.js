@@ -29,7 +29,8 @@ export type Lens<S,T,A,B> =
 export type Lens_<S,A> = Lens<S,S,A,A>
 
 export type Getting<R,S,A> =
-  (f: (pure: Pure_, val: A) => Const<R,A>) => ((pure: Pure_, obj: S) => Const<R,S>)
+  <FA: Const<R,A>, FS: Const<R,S>>
+  (f: (pure: Pure_, val: A) => FA) => ((pure: Pure_, obj: S) => FS)
 
 export type Setting<S,T,A,B> =
   (f: (pure: Pure_, val: A) => Identity<B>) => ((pure: Pure_, obj: S) => Identity<T>)
