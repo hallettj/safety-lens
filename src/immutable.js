@@ -1,7 +1,7 @@
 /* @flow */
 
 import { foldrOf, lens } from './lens'
-import { ap } from './src/Applicative'
+import { ap } from './lib/Applicative'
 import { Collection, Iterable, List, Record, Set, Seq, Stack } from 'immutable'
 
 import type { Endo, Fold, Lens_, Traversal_ } from './lens'

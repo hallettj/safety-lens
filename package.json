@@ -22,7 +22,8 @@
     "immutable": "*"
   },
   "devDependencies": {
-    "babel": "^5.6.14",
+    "babel": "^5.8.0",
+    "babel-plugin-flow-comments": "^1.0.9",
     "chai": "^3.0.0",
     "chai-immutable": "^1.2.0",
     "flow-bin": "^0.14.0",

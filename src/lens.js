@@ -1,8 +1,8 @@
 /* @flow */
 
-import { Just, just, nothing } from './src/Maybe'
+import { Just, just, nothing } from './lib/Maybe'
 
-import type { Maybe } from './src/Maybe'
+import type { Maybe } from './lib/Maybe'
 
 export {
   Endo,

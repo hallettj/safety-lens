@@ -1,7 +1,7 @@
 
 import { pair, property } from 'jsverify'
 import { get, set } from '../lens'
-import { map } from '../src/Functor'
+import { map } from '../lib/Functor'
 
 import type { Arbitrary } from 'jsverify'
 import type { Lens_, Traversal_ } from '../lens'
