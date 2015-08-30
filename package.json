@@ -11,7 +11,8 @@
   },
   "main": "lens.js",
   "scripts": {
-    "test": "node_modules/.bin/flow check && make && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/"
+    "test": "node_modules/.bin/flow check && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
+    "prepublish": "make && npm test"
   },
   "keywords": [
     "lens",
