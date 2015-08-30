@@ -49,3 +49,16 @@ Until documentation materializes, take a look at the [tests][] to see how this
 library works.
 
 [tests]: https://github.com/hallettj/lens.js/tree/master/test/immutable.js
+
+
+## Consuming types
+
+To include type information with this library, create a `.flowconfig` file in
+your project root with a reference to the interface file directory in this
+module.
+For example:
+
+```
+[libs]
+node_modules/lens/types/
+```
