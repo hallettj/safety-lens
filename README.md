@@ -21,8 +21,8 @@ To get the second element from the first sub-list,
 you could use this lens:
 
 ```js
-import { compose, get, lookup, set, over } from 'lens'
-import { index } from 'lens/immutable'
+import { compose, get, lookup, set, over } from 'safety-lens'
+import { index } from 'safety-lens/immutable'
 
 var lens = compose(index(0), index(1))
 assert( lookup(lens, data) === 2 )
@@ -51,6 +51,13 @@ library works.
 [tests]: https://github.com/hallettj/lens.js/tree/master/test/immutable.js
 
 
+## Install
+
+```
+npm install --save safety-lens
+```
+
+
 ## Consuming types
 
 To include type information with this library, create a `.flowconfig` file in
@@ -60,5 +67,5 @@ For example:
 
 ```
 [libs]
-node_modules/lens/types/
+node_modules/safety-lens/types/
 ```

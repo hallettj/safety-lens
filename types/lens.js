@@ -1,4 +1,4 @@
-declare module "lens" {
+declare module "safety-lens" {
   declare type Lens<S,T,A,B> =
     <FB: Functor<B>, FT: Functor<T>>
     (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT);

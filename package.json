@@ -1,7 +1,7 @@
 {
-  "name": "lens",
+  "name": "safety-lens",
   "version": "1.0.0",
-  "description": "Type-safe, functional lens library",
+  "description": "Type-safe, functional lens library supporting Immutable.js",
   "author": "Jesse Hallett <jesse@sitr.us>",
   "license": "Apache-2.0",
   "homepage": "https://github.com/hallettj/lens.js",
@@ -11,19 +11,22 @@
   },
   "main": "lens.js",
   "scripts": {
-    "test": "node_modules/.bin/flow && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/"
+    "test": "node_modules/.bin/flow check && make && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/"
   },
   "keywords": [
     "lens",
+    "lenses",
     "functional",
-    "cursors"
+    "Flow",
+    "cursors",
+    "immutable",
+    "Immutable.js"
   ],
   "dependencies": {
     "immutable": "*"
   },
   "devDependencies": {
     "babel": "^5.8.0",
-    "babel-plugin-flow-comments": "^1.0.9",
     "chai": "^3.0.0",
     "chai-immutable": "^1.2.0",
     "flow-bin": "^0.14.0",
