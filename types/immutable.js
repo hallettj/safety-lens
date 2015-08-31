@@ -1,4 +1,11 @@
-declare module "safety-lens/immutable" {
+import type { List, Stack, Record } from 'immutable'
+import type {
+  Endo,
+  Fold,
+  Traversal_,
+} from 'safety-lens'
+
+declare module 'safety-lens/immutable' {
   declare function field<S:Object,A>(name: $Enum<S>): Lens_<Record<S>,A>;
   declare function contains<V>(val: V): Lens_<Set<V>, boolean>;
   declare function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V>;

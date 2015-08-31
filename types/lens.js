@@ -1,4 +1,6 @@
-declare module "safety-lens" {
+import type { Maybe } from 'safety-lens/lib/Maybe'
+
+declare module 'safety-lens' {
   declare type Lens<S,T,A,B> =
     <FB: Functor<B>, FT: Functor<T>>
     (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT);
