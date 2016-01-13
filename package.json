@@ -14,6 +14,15 @@
     "test": "node_modules/.bin/flow check && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
     "prepublish": "make && npm test"
   },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-class-properties",
+      "transform-flow-strip-types"
+    ]
+  },
   "keywords": [
     "lens",
     "lenses",
@@ -35,6 +44,10 @@
   },
   "devDependencies": {
     "babel-cli": "^6.3.0",
+    "babel-plugin-syntax-flow": "^6.3.13",
+    "babel-plugin-transform-class-properties": "^6.4.0",
+    "babel-plugin-transform-flow-strip-types": "^6.4.0",
+    "babel-preset-es2015": "^6.3.13",
     "chai": "^3.0.0",
     "chai-immutable": "^1.2.0",
     "flow-bin": "^0.20.1",
