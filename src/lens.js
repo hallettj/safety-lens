@@ -4,23 +4,6 @@ import { Just, just, nothing } from './lib/Maybe'
 
 import type { Maybe } from './lib/Maybe'
 
-export {
-  Endo,
-  compose,
-  filtering,
-  foldMapOf,
-  foldrOf,
-  get,
-  getter,
-  getter as to,
-  lens,
-  lookup,
-  over,
-  set,
-  sumOf,
-  traverseOf,
-}
-
 /* Types */
 
 export type Lens<S,T,A,B> =
@@ -249,3 +232,21 @@ function lookup<S,A>(l: Fold<First<A>,S,A>, obj: S): ?A {
 }
 
 function id<A>(val: A): A { return val }
+
+export {
+  Endo,
+  compose,
+  filtering,
+  foldMapOf,
+  foldrOf,
+  get,
+  getter,
+  getter as to,
+  id,
+  lens,
+  lookup,
+  over,
+  set,
+  sumOf,
+  traverseOf,
+}

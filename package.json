@@ -34,10 +34,10 @@
     "immutable": "*"
   },
   "devDependencies": {
-    "babel": "^5.8.0",
+    "babel-cli": "^6.3.0",
     "chai": "^3.0.0",
     "chai-immutable": "^1.2.0",
-    "flow-bin": "^0.14.0",
+    "flow-bin": "^0.20.1",
     "jsverify": "^0.6.3",
     "mocha": "^2.2.5"
   }
