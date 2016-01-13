@@ -5,6 +5,6 @@
 [include]
 
 [libs]
-./internal_types/
+./types/
 
 [options]
