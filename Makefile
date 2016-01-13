@@ -6,13 +6,10 @@ out_files ::= $(patsubst %.js.flow,%.js,$(src_files))
 
 all: build
 
-build: $(out_files) node_modules
+build: $(out_files)
 
 %.js: %.js.flow
 	$(babel) $< --out-file $@
 
 clean:
 	rm -f $(out_files)
-
-node_modules: package.json
-	npm install
