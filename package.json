@@ -34,10 +34,12 @@
   ],
   "files": [
     "lens.js",
+    "lens.js.flow",
     "immutable.js",
+    "immutable.js.flow",
     "es2015.js",
-    "lib",
-    "types"
+    "es2015.js.flow",
+    "lib"
   ],
   "dependencies": {
     "immutable": "*"
