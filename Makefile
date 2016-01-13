@@ -1,16 +1,18 @@
 .PHONY: all build clean
 
-babel = node_modules/.bin/babel
-SRC = $(shell find src)
+babel     ::= node_modules/.bin/babel
+src_files ::= $(shell find . -name '*.js.flow' -not -path './node_modules/*')
+out_files ::= $(patsubst %.js.flow,%.js,$(src_files))
 
 all: build
 
-build: $(SRC)
-	$(babel) src --out-dir .
+build: $(out_files) node_modules
+
+%.js: %.js.flow
+	$(babel) $< --out-file $@
 
 clean:
-	rm -f *.js
-	rm -rf lib
+	rm -f $(out_files)
 
 node_modules: package.json
 	npm install
