@@ -1,5 +1,7 @@
 /* @flow */
 
+import type { Apply } from './fantasy-land'
+
 export {
   ap,
 }

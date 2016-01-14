@@ -1,5 +1,7 @@
 /* @flow */
 
+import type { Apply, Pure } from './fantasy-land'
+
 export type Maybe<A> = Just<A> | Nothing
 
 class Just<A> {

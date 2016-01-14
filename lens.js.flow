@@ -2,6 +2,7 @@
 
 import { Just, just, nothing } from './lib/Maybe'
 
+import type { Apply, Functor, Monoid, Pure, Traversable } from './lib/fantasy-land'
 import type { Maybe } from './lib/Maybe'
 
 /* Types */

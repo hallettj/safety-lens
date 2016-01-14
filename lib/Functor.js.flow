@@ -1,5 +1,7 @@
 /* @flow */
 
+import type { Functor } from './fantasy-land'
+
 export {
   map,
 }

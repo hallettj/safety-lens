@@ -14,6 +14,29 @@ export {
   traverse,
 }
 
+export interface Monoid {
+  concat<M: Monoid>(other: Monoid): M,
+  empty<M: Monoid>(): M,
+}
+
+export interface Functor<A> {
+  map<B, FB: Functor<B>>(f: (val: A) => B): FB
+}
+
+export type Pure = <T, FT: Apply<T>>(_: T) => FT
+
+export interface Apply<F> extends Functor<F> {
+  ap<A,B, FB: Apply<B>>(x: $Subtype<Apply<A>>): FB
+}
+
+export interface Foldable<A> {
+  reduce<B>(f: (acc: B, val: A) => B, init: B): B
+}
+
+export interface Traversable<A> extends Functor<A> {
+  sequence<TA: Traversable<A>, FA: Apply<TA>>(pure: Pure): FA
+}
+
 function concat<M: Monoid>(x: M, y: M): M {
   return x.concat(y)
 }
