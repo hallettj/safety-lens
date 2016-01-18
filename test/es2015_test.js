@@ -3,7 +3,7 @@
 import chai from 'chai'
 import { constant, dict, integer, pair, record, string } from 'jsverify'
 import deepEqual from 'deep-equal'
-import { get, over, set } from '../lens'
+import { get, id, over, set } from '../lens'
 import { prop } from '../es2015'
 import * as laws from './laws'
 
@@ -27,7 +27,7 @@ describe('es2015', function() {
     dataAndLens: dict(integer).smap(
       o => {
         const p = Object.keys(o)[0]
-        return [o, prop(p)]
+        return [o, p ? prop(p) : id]
       },
       ([o, _]) => o
     ),
