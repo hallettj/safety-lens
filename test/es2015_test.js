@@ -43,4 +43,9 @@ describe('es2015', function() {
     const value = get(prop('baz'), obj)
     expect(value).to.be.undefined
   })
+
+  it('modifies a value', function() {
+    const obj_ = over(prop('foo'), x => x + 2, obj)
+    expect(obj_.foo).to.equal(3)
+  })
 })
