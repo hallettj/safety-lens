@@ -29,14 +29,15 @@ function index<A>(idx: number): Traversal_<A[],A> {
 
 /* objects */
 
-function prop<S:Object,A>(key: $Enum<S>): Lens_<S,A> {
+function prop<S:Object,T:Object,A,B>(key: $Enum<S> | $Enum<T>): Lens<S,T,A,B> {
   return lens(
     obj => obj[key],
     (obj, val) => {
       var newObj = {}
       for (var k of Object.keys(obj)) {
-        newObj[k] = k === key ? val : obj[k]
+        if (k !== key) { newObj[k] = obj[k] }
       }
+      newObj[key] = val
       return newObj
     }
   )

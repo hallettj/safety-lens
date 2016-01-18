@@ -11,8 +11,9 @@
   },
   "main": "lens.js",
   "scripts": {
-    "test": "node_modules/.bin/flow check && node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
-    "prepublish": "make && npm test"
+    "test": "node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
+    "typecheck": "node_modules/.bin/flow check",
+    "prepublish": "npm run typecheck && make && npm test"
   },
   "babel": {
     "presets": [
