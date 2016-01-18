@@ -33,8 +33,8 @@ function prop<S:Object,T:Object,A,B>(key: $Enum<S> | $Enum<T>): Lens<S,T,A,B> {
   return lens(
     obj => obj[key],
     (obj, val) => {
-      var newObj = {}
-      for (var k of Object.keys(obj)) {
+      const newObj = {}
+      for (const k of Object.keys(obj)) {
         if (k !== key) { newObj[k] = obj[k] }
       }
       newObj[key] = val

@@ -1,12 +1,17 @@
-/* @flow */
+/* @noflow */
 
 import chai from 'chai'
-import { get, set } from '../lens'
+import { constant, dict, integer, pair, record, string } from 'jsverify'
+import deepEqual from 'deep-equal'
+import { get, over, set } from '../lens'
 import { prop } from '../es2015'
+import * as laws from './laws'
 
 const expect = chai.expect
 declare var describe;
 declare var it;
+
+const lensLaws = laws.lensLaws.bind(null, deepEqual)
 
 type Obj = {
   foo: number,
@@ -17,6 +22,25 @@ type Obj = {
 const obj: Obj = { foo: 1, bar: 'two' }
 
 describe('es2015', function() {
+
+  describe('prop', lensLaws({
+    dataAndLens: dict(integer).smap(
+      o => {
+        const p = Object.keys(o)[0]
+        return [o, prop(p)]
+      },
+      ([o, _]) => o
+    ),
+    value: integer,
+  }))
+
+  describe('prop, when property does not exist in input object', lensLaws({
+    dataAndLens: pair(
+      record({ foo: integer, bar: string }),
+      constant(prop('baz'))
+    ),
+    value: string,
+  }))
 
   it('gets property value from an object', function() {
     const value = get(prop('foo'), obj)
@@ -48,4 +72,5 @@ describe('es2015', function() {
     const obj_ = over(prop('foo'), x => x + 2, obj)
     expect(obj_.foo).to.equal(3)
   })
+
 })

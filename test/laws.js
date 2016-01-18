@@ -1,3 +1,4 @@
+/* @noflow */
 
 import { pair, property } from 'jsverify'
 import { get, set } from '../lens'
