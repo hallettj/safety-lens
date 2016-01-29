@@ -9,7 +9,7 @@ all: build
 build: $(out_files)
 
 %.js: %.js.flow
-	$(babel) $< --out-file $@
+	$(babel) $< --out-file $@ --source-maps
 
 clean:
 	rm -f $(out_files)

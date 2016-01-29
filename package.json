@@ -36,10 +36,13 @@
   "files": [
     "lens.js",
     "lens.js.flow",
+    "lens.js.map",
     "immutable.js",
     "immutable.js.flow",
+    "immutable.js.map",
     "es2015.js",
     "es2015.js.flow",
+    "es2015.js.map",
     "lib"
   ],
   "dependencies": {
