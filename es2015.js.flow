@@ -6,6 +6,7 @@ import type { Lens, Lens_, Traversal_ } from './lens'
 
 export {
   index,
+  key,
   prop,
   _1,
   _2,
@@ -29,16 +30,30 @@ function index<A>(idx: number): Traversal_<A[],A> {
 
 /* objects */
 
-function prop<S:Object,T:Object,A,B>(key: $Enum<S> | $Enum<T>): Lens<S,T,A,B> {
+/*
+ * Access a property in an object. Flow will emit an error if the named property
+ * is not a member of the target object type.
+ */
+function prop<S:Object,T:Object,A,B>(name: $Enum<S> | $Enum<T>): Lens<S,T,A,B> {
+  return key(name)
+}
+
+/*
+ * Access a property in an object. With this version, flow will not check if the
+ * property exists in the target type. Use `key` instead of `prop` when the
+ * target is used as a map (as opposed to a record), or when an undefined result
+ * is acceptable.
+ */
+function key<S:Object,T:Object,A,B>(name: string): Lens<S,T,A,B> {
   return lens(
-    obj => obj[key],
+    obj => obj[name],
     (obj, val) => {
       const newObj = {}
       for (const k of Object.keys(obj)) {
-        if (k !== key) { newObj[k] = obj[k] }
+        if (k !== name) { newObj[k] = obj[k] }
       }
       if (typeof val !== 'undefined') {
-        newObj[key] = val
+        newObj[name] = val
       }
       return newObj
     }
