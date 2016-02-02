@@ -57,7 +57,7 @@
     "chai": "^3.0.0",
     "chai-immutable": "^1.2.0",
     "deep-equal": "^1.0.1",
-    "flow-bin": "^0.20.1",
+    "flow-bin": "^0.21.0",
     "jsverify": "^0.7.1",
     "mocha": "^2.2.5"
   }
