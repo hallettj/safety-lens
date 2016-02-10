@@ -1,6 +1,7 @@
 [ignore]
 .*/flow-bin/.*
 .*/jsverify/lib/.*
+.*/babel.*
 
 [include]
 
