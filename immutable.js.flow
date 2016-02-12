@@ -2,7 +2,7 @@
 
 import { foldrOf, lens } from './lens'
 import { ap } from './lib/Applicative'
-import { Collection, Iterable, List, Record, Set, Seq, Stack } from 'immutable'
+import { Collection, Iterable, List, Map, Record, Set, Seq, Stack } from 'immutable'
 
 import type { Apply, Pure } from './lib/fantasy-land'
 import type { Endo, Fold, Lens_, Traversal_ } from './lens'
