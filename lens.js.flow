@@ -110,9 +110,28 @@ function identity<T, FT: Identity<T>>(val: T): FT {
   return (new Identity(val): any)
 }
 
+declare var compose: (<A,B,C,D,E>( fn3: (d: D) => E
+                                 , fn2: (c: C) => D
+                                 , fn1: (b: B) => C
+                                 , fn0: (a: A) => B
+                                 , $?: null
+                                 ) => (a: A) => E)
+                   & (<A,B,C,D>( fn2: (c: C) => D
+                               , fn1: (b: B) => C
+                               , fn0: (a: A) => B
+                               , $?: null
+                               ) => (a: A) => D)
+                   & (<A,B,C>( fn1: (b: B) => C
+                             , fn0: (a: A) => B
+                             , $?: null
+                             ) => (a: A) => C)
+                   & (<A,B>( fn0: (a: A) => B
+                           , $?: null
+                           ) => (a: A) => B)
+
 // Ordinary function composition - also works to compose lenses
-function compose<A,B,C>(f: (_: B) => C, g: (_: A) => B): (_: A) => C {
-  return x => f(g(x))
+function compose(...args) {
+  return args.reduceRight((accum, f) => x => f(accum(x)))
 }
 
 /* lenses */
