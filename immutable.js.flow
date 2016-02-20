@@ -2,8 +2,9 @@
 
 import { foldrOf, lens } from './lens'
 import { ap } from './lib/Applicative'
-import { Collection, Iterable, List, Map, Record, Set, Seq, Stack } from 'immutable'
+import { Collection, List, Map, Record, Set, Stack } from 'immutable'
 
+import type { Iterable, IndexedCollection, KeyedIterable } from 'immutable'
 import type { Apply, Pure } from './lib/fantasy-land'
 import type { Endo, Fold, Lens_, Traversal_ } from './lens'
 
@@ -18,10 +19,10 @@ export {
 
 /* lenses */
 
-function field<S:Object,A>(name: $Enum<S>): Lens_<Record<S>,A> {
+function field<S:Object,A>(name: $Keys<S>): Lens_<Record<S>,A> {
   return lens(
-    obj => obj.get(name),
-    (obj, val) => obj.set(name, val)
+    obj => obj.get((name:any)),
+    (obj, val) => obj.set((name:any), val)
   )
 }
 
@@ -38,14 +39,15 @@ function contains<V>(val: V): Lens_<Set<V>, boolean> {
 function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
   return f => (pure, obj) => {
     if (obj.has(idx)) {
-      return f(pure, obj.get(idx)).map(updatedValue => {
+      const value = (obj.get(idx): any)  // cast, because idx is guaranteed to be present
+      return f(pure, value).map(updatedValue => {
         // Optimize update for certain types
         if (typeof obj.set === 'function') {
           return obj.set(idx, updatedValue)
         }
         else {
           // This works for any Iterable, but might not give the most efficient update.
-          return obj.map((v, k) => k === idx ? updatedValue : v)
+          return (obj:any).map((v, k) => k === idx ? updatedValue : v)
         }
       })
     }
@@ -88,15 +90,15 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
  *
  */
 
-function traverse<A,K,B, TB: Iterable<K,B>, FTB: Apply<TB>>(
+function traverse<A,K,B, TB: Collection<K,B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: Iterable<K,A>) => FTB {
+): (pure: Pure, obj: Collection<K,A>) => FTB {
   return (pure, obj) => {
-    if (obj instanceof Iterable.Keyed || obj instanceof Collection.Keyed) {
-      return traverseKeyedIterable(f)(pure, obj)
+    if (obj instanceof Collection.Keyed) {
+      return traverseKeyedCollection(f)(pure, obj)
     }
-    else if (obj instanceof Iterable){
-      return traverseIterable(f)(pure, obj)
+    else if (obj instanceof Collection.Indexed || obj instanceof Collection.Set) {
+      return traverseCollection(f)(pure, obj)
     }
     else {
       throw new TypeError("No `traverse` implementation for "+ nameOfType(obj))
@@ -104,11 +106,9 @@ function traverse<A,K,B, TB: Iterable<K,B>, FTB: Apply<TB>>(
   }
 }
 
-type UnkeyedIterable<T> = Seq.Indexed<T> | Seq.Set<T> | Iterable.Indexed<T> | Iterable.Set<T>
-
-function traverseIterable<A,B, TB: UnkeyedIterable<B>, FTB: Apply<TB>>(
+function traverseCollection<A,B, TB: IndexedCollection<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: UnkeyedIterable<A>) => FTB {
+): (pure: Pure, obj: IndexedCollection<A>) => FTB {
   return (pure, obj) => {
     var cons = consImpl(obj)
     var emptyColl = obj.take(0)
@@ -116,9 +116,9 @@ function traverseIterable<A,B, TB: UnkeyedIterable<B>, FTB: Apply<TB>>(
   }
 }
 
-function traverseKeyedIterable<A,B, TB: Iterable.Keyed<B>, FTB: Apply<TB>>(
+function traverseKeyedCollection<A,K,B, TB: KeyedIterable<K,B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: Iterable.Keyed<A>) => FTB {
+): (pure: Pure, obj: KeyedIterable<K,A>) => FTB {
   return (pure, obj) => {
     var cons = consKeyedImpl(obj)
     var emptyColl = obj.take(0)
@@ -129,27 +129,33 @@ function traverseKeyedIterable<A,B, TB: Iterable.Keyed<B>, FTB: Apply<TB>>(
   }
 }
 
-function consImpl<A,S: UnkeyedIterable<A>>(coll: S): (val: A) => (coll: S) => S {
-  if (coll instanceof List || coll instanceof Stack) {
-    return val => coll => coll.unshift(val)
-  }
-  else if (coll instanceof Set) {
-    return val => coll => coll.add(val)
-  }
-  else {
-    var emptyColl = coll.take(0)
-    return val => coll => emptyColl.concat(val).concat(coll)
+function consImpl<A,S: IndexedCollection<A>>(coll: S): (val: A) => (coll: S) => S {
+  return val => coll => {
+    if (coll instanceof List) {
+      return coll.unshift(val)
+    }
+    else if (coll instanceof Stack) {
+      return coll.unshift(val)
+    }
+    else if (coll instanceof Set) {
+      return coll.add(val)
+    }
+    else {
+      const emptyColl = coll.take(0)
+      return emptyColl.concat(val).concat(coll)
+    }
   }
 }
 
-function consKeyedImpl<A,K,S: Iterable.Keyed<K,A>>(coll: S):
-  (val: A) => (key: K) => (coll: S) => S {
-  if (coll instanceof Map) {
-    return val => key => coll => coll.set(key, val)
-  }
-  else {
-    var emptyColl = coll.take(0)
-    return val => key => coll => emptyColl.concat([[key,val]]).concat(coll)
+function consKeyedImpl<A,K,S: KeyedIterable<K,A>>(coll: S): (val: A) => (key: K) => (coll: S) => S {
+  return val => key => coll => {
+    if (coll instanceof Map) {
+      return coll.set(key, val)
+    }
+    else {
+      var emptyColl = coll.take(0)
+      return emptyColl.concat([[key,val]]).concat(coll)
+    }
   }
 }
 
