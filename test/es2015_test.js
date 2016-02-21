@@ -1,10 +1,10 @@
 /* @noflow */
 
 import chai from 'chai'
-import { constant, dict, integer, pair, record, string } from 'jsverify'
+import { bool, constant, dict, integer, oneof, pair, record, string } from 'jsverify'
 import deepEqual from 'deep-equal'
 import { get, id, over, set } from '../lens'
-import { prop } from '../es2015'
+import { _1, _2, prop } from '../es2015'
 import * as laws from './laws'
 
 const expect = chai.expect
@@ -42,6 +42,22 @@ describe('es2015', function() {
     value: string,
   }))
 
+  describe('_1', lensLaws({
+    dataAndLens: pair(
+      pair(oneof(integer, string, bool), oneof(integer, string, bool)),
+      constant(_1)
+    ),
+    value: oneof(integer, string, bool),
+  }))
+
+  describe('_2', lensLaws({
+    dataAndLens: pair(
+      pair(oneof(integer, string, bool), oneof(integer, string, bool)),
+      constant(_2)
+    ),
+    value: oneof(integer, string, bool),
+  }))
+
   it('gets property value from an object', function() {
     const value = get(prop('foo'), obj)
     expect(value).to.equal(1)
@@ -71,6 +87,28 @@ describe('es2015', function() {
   it('modifies a value', function() {
     const obj_ = over(prop('foo'), x => x + 2, obj)
     expect(obj_.foo).to.equal(3)
+  })
+
+  it('gets the first value in a pair', function() {
+    const pair = ['foo', true]
+    expect(get(_1, pair)).to.equal('foo')
+  })
+
+  it('sets the first value in a pair', function() {
+    const pair = ['foo', true]
+    const pair_ = set(_1, 'bar', pair)
+    expect(pair_[0]).to.equal('bar')
+  })
+
+  it('gets the second value in a pair', function() {
+    const pair = ['foo', true]
+    expect(get(_2, pair)).to.equal(true)
+  })
+
+  it('sets the second value in a pair', function() {
+    const pair = ['foo', true]
+    const pair_ = set(_2, 1, pair)
+    expect(pair_[1]).to.equal(1)
   })
 
 })

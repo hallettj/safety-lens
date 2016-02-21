@@ -46,7 +46,7 @@ export type Fold<R,S,A> =
 
 // `Pure_` is "pure" for functors - will not be invoked unless further
 // constrained to `Pure`
-type Pure_ = Function
+export type Pure_ = Function
 
 type Contravariant<A> = {
   contramap<B, FB: Contravariant<B>>(f: (_: B) => A): FB

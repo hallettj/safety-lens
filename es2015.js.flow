@@ -2,15 +2,8 @@
 
 import { lens } from './lens'
 
-import type { Lens, Lens_, Traversal_ } from './lens'
-
-export {
-  index,
-  key,
-  prop,
-  _1,
-  _2,
-}
+import type { Lens, Lens_, Pure_, Traversal_ } from './lens'
+import type { Functor } from './lib/fantasy-land'
 
 /* arrays */
 
@@ -63,18 +56,29 @@ function key<S:Object,T:Object,A,B>(name: string): Lens<S,T,A,B> {
 
 /* tuples */
 
-function _1<A,B,C>(): Lens<[A,B],[C,B],A,C> {
-  return lens(
-    ([a,_]) => a,
-    ([_,b], c) => [c,b]
+// Lens<[A,B],[C,B],A,C>
+function _1
+<A,B,C, FB: Functor<C>, FT: Functor<[C,B]>>
+(f: (pure: Pure_, val: A) => FB): ((pure: Pure_, obj: [A,B]) => FT) {
+  return (pure, [a,b]) => (
+    f(pure, a).map(c => [c,b])
   )
 }
 
-function _2<A,B,C>(): Lens<[A,B],[A,C],B,C> {
-  return lens(
-    ([_,b]) => b,
-    ([a,_], c) => [a,c]
+// Lens<[A,B],[A,C],B,C>
+function _2
+<A,B,C, FB: Functor<C>, FT: Functor<[A,C]>>
+(f: (pure: Pure_, val: B) => FB): ((pure: Pure_, obj: [A,B]) => FT) {
+  return (pure, [a,b]) => (
+    f(pure, b).map(c => [a,c])
   )
 }
 
+export {
+  index,
+  key,
+  prop,
+  _1,
+  _2,
+}
 
