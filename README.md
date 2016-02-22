@@ -42,7 +42,7 @@ In the example above, `set(prop('bar'), 3, obj)` creates a new object that sets
 the `bar` property to `3`, and keeps the `foo` property set to `1`.
 
 This is obviously more complicated than writing the equivalent expressions
-`obj.bar` or `Object.assign({}, obj, { bar: 3 })`.
+`obj.bar` or `obj.bar = 3`.
 But lenses do come with several advantages:
 
 - Lenses perform immutable updates: you get an updated copy of a data structure, while the original is untouched.
