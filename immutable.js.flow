@@ -125,7 +125,7 @@ function consImpl<A,S: IndexedCollection<A>>(coll: S): (val: A) => (coll: S) => 
       return coll.add(val)
     }
     else {
-      const emptyColl = coll.take(0)
+      const emptyColl = (coll:any).take(0)
       return emptyColl.concat(val).concat(coll)
     }
   }
