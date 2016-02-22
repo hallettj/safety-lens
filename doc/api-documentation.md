@@ -7,14 +7,17 @@ Please read that page before reading this documentation.
 
 safety-lens is divided into several modules.
 
-- `'safety-lens'`, the main module, contains general purpose functions and types.
+- [`safety-lens`][lens], the main module, contains general purpose functions and types.
   This module does not export lenses, but does export `get`, `set`, and other
   functions that take lenses as arguments.
   It also contains some helpers for building and composing lenses.
-- `'safety-lens/es2015'` exports lenses that operate on native JavaScript data structures,
+- [`safety-lens/es2015`][lens/es2015] exports lenses that operate on native JavaScript data structures,
   such as objects, maps, arrays, pairs, and promises.
-- `'safety-lens/immutable'` exports lenses that operate on data structures from [Immutable][].
+- [`safety-lens/immutable`][lens/immutable] exports lenses that operate on data structures from [Immutable][].
 
+[lens]: #safety-lens
+[lens/es2015]: #safety-lenses2015
+[lens/immutable]: #safety-lensimmutable
 [Immutable]: https://facebook.github.io/immutable-js/
 
 Lenses from `'safety-lens/es2015'` and `'safety-lens/immutable'` are interoperable.
