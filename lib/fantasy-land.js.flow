@@ -8,6 +8,7 @@
  */
 
 export {
+  ap,
   concat,
   empty,
   sequence,
@@ -35,6 +36,10 @@ export interface Foldable<A> {
 
 export interface Traversable<A> extends Functor<A> {
   sequence<TA: Traversable<A>, FA: Apply<TA>>(pure: Pure): FA
+}
+
+function ap<A,B>(f: Apply<(_: A) => B>, x: Apply<A>): Apply<B> {
+  return f.ap(x)
 }
 
 function concat<M: Monoid>(x: M, y: M): M {
