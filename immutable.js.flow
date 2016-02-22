@@ -89,16 +89,15 @@ function index<K,V, S:Iterable<K,V>>(idx: K): Traversal_<S,V> {
  *     assert( y.value === undefined )
  *
  */
-
-function traverse<A,K,B, TB: Collection<K,B>, FTB: Apply<TB>>(
-  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+function traverse<A,K,B, FB: Apply<B>, TB: Collection<K,B>, FTB: Apply<TB>>(
+  f: (pure: Pure, _: A) => FB
 ): (pure: Pure, obj: Collection<K,A>) => FTB {
   return (pure, obj) => {
     if (obj instanceof Collection.Keyed) {
-      return traverseKeyedCollection(f)(pure, obj)
+      return traverseKeyedCollection((f:any))(pure, obj)  // TODO: get rid of type cast
     }
     else if (obj instanceof Collection.Indexed || obj instanceof Collection.Set) {
-      return traverseCollection(f)(pure, obj)
+      return traverseCollection((f:any))(pure, obj)
     }
     else {
       throw new TypeError("No `traverse` implementation for "+ nameOfType(obj))
