@@ -1,9 +1,9 @@
 /* @flow */
 
-import { lens } from './lens'
+import { id, lens } from './lens'
 
-import type { Lens, Lens_, Pure_, Traversal_ } from './lens'
-import type { Functor } from './lib/fantasy-land'
+import type { Identity, Lens, Lens_, Pure_, Traversal_ } from './lens'
+import type { Functor, Pure } from './lib/fantasy-land'
 
 /* arrays */
 
@@ -74,11 +74,25 @@ function _2
   )
 }
 
+
+/* Promise */
+
+function success<A,B>
+(f: (pure: Pure, val: A) => Identity<B>): ((pure: Pure, obj: Promise<A>) => Identity<Promise<B>>) {
+  return (pure, promise) => pure(promise.then(a => f(pure, a).value))
+}
+
+function failure<A,B>
+(f: (pure: Pure, val: A) => Identity<B>): ((pure: Pure, obj: Promise<A>) => Identity<Promise<B>>) {
+  return (pure, promise) => pure(promise.then(id, a => Promise.reject(f(pure, a).value)))
+}
+
 export {
   index,
   key,
   prop,
   _1,
   _2,
+  success,
+  failure,
 }
-

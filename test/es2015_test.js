@@ -1,15 +1,17 @@
 /* @noflow */
 
 import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import { bool, constant, dict, integer, oneof, pair, record, string } from 'jsverify'
 import deepEqual from 'deep-equal'
 import { get, id, over, set } from '../lens'
-import { _1, _2, prop } from '../es2015'
+import { _1, _2, prop, success, failure } from '../es2015'
 import * as laws from './laws'
 
+chai.use(chaiAsPromised)
 const expect = chai.expect
-declare var describe;
-declare var it;
+declare var describe
+declare var it
 
 const lensLaws = laws.lensLaws.bind(null, deepEqual)
 
@@ -111,4 +113,23 @@ describe('es2015', function() {
     expect(pair_[1]).to.equal(1)
   })
 
+  describe('promise', function() {
+    it('sets the result of a promise', function() {
+      const promise = Promise.resolve(1)
+      const promise_ = set(success, 2, promise)
+      return expect(promise_).to.eventually.equal(2)
+    })
+
+    it('sets the failure outcome of a promise', function() {
+      const promise = Promise.reject(1)
+      const promise_ = set(failure, 2, promise)
+      return expect(promise_).to.be.rejectedWith(2)
+    })
+
+    it('maps the result of a promise', function () {
+      const promise = Promise.resolve(1)
+      const promise_ = over(success, x => x * 2, promise)
+      return expect(promise_).to.eventually.equal(2)
+    })
+  })
 })

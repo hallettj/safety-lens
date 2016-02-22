@@ -18,7 +18,7 @@ export type Getting<R,S,A> =
   (f: (pure: Pure_, val: A) => FA) => ((pure: Pure_, obj: S) => FS)
 
 export type Setting<S,T,A,B> =
-  (f: (pure: Pure_, val: A) => Identity<B>) => ((pure: Pure_, obj: S) => Identity<T>)
+  (f: (pure: Pure, val: A) => Identity<B>) => ((pure: Pure, obj: S) => Identity<T>)
 
 export type Getter<S,A> =
   <FA: Contravariant<A> & Functor<A>, FS: Contravariant<S> & Functor<S>>
@@ -26,7 +26,7 @@ export type Getter<S,A> =
 
 export type Setter<S,T,A,B> =
   <FB: Settable<B>, FT: Settable<T>>
-  (f: (pure: Pure_, val: A) => FB) => ((pure: Pure_, obj: S) => FT)
+  (f: (pure: Pure, val: A) => FB) => ((pure: Pure, obj: S) => FT)
 
 export type Setter_<S,A> = Setter<S,S,A,A>
 
@@ -52,7 +52,7 @@ type Contravariant<A> = {
   contramap<B, FB: Contravariant<B>>(f: (_: B) => A): FB
 }
 
-type Settable<A> = Apply<A> & Traversable<A>
+export type Settable<A> = Apply<A> & Traversable<A>
 
 
 
@@ -255,6 +255,7 @@ function id<A>(val: A): A { return val }
 
 export {
   Endo,
+  Identity,
   compose,
   filtering,
   foldMapOf,
@@ -263,6 +264,7 @@ export {
   getter,
   getter as to,
   id,
+  identity,
   lens,
   lookup,
   over,
