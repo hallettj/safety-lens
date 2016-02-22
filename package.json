@@ -1,6 +1,6 @@
 {
   "name": "safety-lens",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Type-safe, functional lens library supporting Immutable.js",
   "author": "Jesse Hallett <jesse@sitr.us>",
   "license": "Apache-2.0",
