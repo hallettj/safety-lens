@@ -45,6 +45,9 @@
     "es2015.js.map",
     "lib"
   ],
+  "directories": {
+    "doc": "doc"
+  },
   "dependencies": {
     "immutable": "*"
   },

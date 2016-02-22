@@ -77,11 +77,13 @@ function _2
 
 /* Promise */
 
+// Setting<Promise<A>,Promise<B>,A,B>
 function success<A,B>
 (f: (pure: Pure, val: A) => Identity<B>): ((pure: Pure, obj: Promise<A>) => Identity<Promise<B>>) {
   return (pure, promise) => pure(promise.then(a => f(pure, a).value))
 }
 
+// Setting<Promise<X>,Promise<X>,A,B>
 function failure<A,B>
 (f: (pure: Pure, val: A) => Identity<B>): ((pure: Pure, obj: Promise<A>) => Identity<Promise<B>>) {
   return (pure, promise) => pure(promise.then(id, a => Promise.reject(f(pure, a).value)))

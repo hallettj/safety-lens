@@ -130,8 +130,8 @@ declare var compose: (<A,B,C,D,E>( fn3: (d: D) => E
                            ) => (a: A) => B)
 
 // Ordinary function composition - also works to compose lenses
-function compose(...args) {
-  return args.reduceRight((accum, f) => x => f(accum(x)))
+function compose(...functions) {
+  return functions.reduceRight((accum, fn) => x => fn(accum(x)))
 }
 
 /* lenses */
