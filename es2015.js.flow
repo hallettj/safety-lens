@@ -27,7 +27,7 @@ function index<A>(idx: number): Traversal_<A[],A> {
  * Access a property in an object. Flow will emit an error if the named property
  * is not a member of the target object type.
  */
-function prop<S:Object,T:Object,A,B>(name: $Enum<S> | $Enum<T>): Lens<S,T,A,B> {
+function prop<S:Object,T:Object,A,B>(name: $Keys<S> | $Keys<T>): Lens<S,T,A,B> {
   return key(name)
 }
 
