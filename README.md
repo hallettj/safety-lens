@@ -78,8 +78,8 @@ Please refer to these topics for more information:
 - [Types of Lenses][], covers specialized lens types, and explains type parameters
 - [API Documentation][]
 
-[Types of Lenses]: docs/types-of-lenses.md
-[API Documentation]: docs/api-documentation.md
+[Types of Lenses]: doc/types-of-lenses.md
+[API Documentation]: doc/api-documentation.md
 
 
 ## Install
