@@ -1,7 +1,9 @@
 [ignore]
-.*/flow-bin/.*
-.*/jsverify/lib/.*
-.*/babel.*
+.*/node_modules/flow-bin/.*
+.*/node_modules/jsverify/lib/.*
+.*/node_modules/babel.*
+.*/node_modules/is-my-json-valid/.*
+.*[^e]\.json
 
 [include]
 
