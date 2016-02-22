@@ -12,6 +12,7 @@ export {
   contains,
   field,
   index,
+  index as key,
   toListOf,
   toStackOf,
   traverse,
