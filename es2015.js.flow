@@ -2,7 +2,7 @@
 
 import { id, lens } from './lens'
 
-import type { Identity, Lens, Lens_, Pure_, Traversal_ } from './lens'
+import type { Identity, Lens, Lens_, Pure_, Traversal, Traversal_ } from './lens'
 import type { Functor, Pure } from './lib/fantasy-land'
 
 /* arrays */
@@ -28,7 +28,7 @@ function index<A>(idx: number): Traversal_<A[],A> {
  * is not a member of the target object type.
  */
 function prop<S:Object,T:Object,A,B>(name: $Keys<S> | $Keys<T>): Lens<S,T,A,B> {
-  return key(name)
+  return (key(name): any)  // cast from `Traversal` to `Lens`
 }
 
 /*
@@ -37,7 +37,7 @@ function prop<S:Object,T:Object,A,B>(name: $Keys<S> | $Keys<T>): Lens<S,T,A,B> {
  * target is used as a map (as opposed to a record), or when an undefined result
  * is acceptable.
  */
-function key<S:Object,T:Object,A,B>(name: string): Lens<S,T,A,B> {
+function key<A,B>(name: string): Traversal<{ [key: string]: A },{ [key: string]: A|B },A,B> {
   return lens(
     obj => obj[name],
     (obj, val) => {

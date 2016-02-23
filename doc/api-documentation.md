@@ -295,15 +295,24 @@ assert( lookup(index(1), xs) === 2 )
 `index` is a `Traversal`, so it cannot be used with `get` to retrieve a value.
 However, you can use `lookup`, which differs from `get` in that it might return `undefined`.
 
-### `key: <S:Object,T:Object,A,B>(name: string) => Lens<S,T,A,B>`
+### `key: <A,B>(name: string) => Traversal<{ [key: string]: A },{ [key: string]: A|B },A,B>`
 
 Given the name of a property, focuses on the value of that property in some map or object.
 A lens created this way can operate on any object that has a property with the same name.
+
+Use `key` for when operating on an object that is used as a map:
+where object keys are not known statically, and where values in the object
+generally have the same type.
+
+Flow is able to infer types of values accessed using `key` (`prop` does not do this).
 
 ### `prop: <S:Object,T:Object,A,B>(name: $Keys<S> | $Keys<T>) => Lens<S,T,A,B>`
 
 Given the name of a property, focuses on the value of that property in some object.
 A lens created this way can operate on any object that has a property with the same name.
+
+Use `prop` when operating on an object that is used as a struct:
+where the object has a fixed set of keys, with different types of values under each key.
 
 ```js
 import { lookup } from 'safety-lens'
@@ -314,12 +323,16 @@ const xs = [1,2,3,4]
 assert( lookup(index(1), xs) === 2 )
 ```
 
+Flow checks that the given name is actually a property in the object that is
+operated on.
+However, Flow is not able to infer types of retrieved values,
+or to check that types of set values are compatible with the type of the object
+that is operated on.
+
 `prop` shares the same implementation with `key`;
-but `prop` has more thorough type-checking.
-Flow is able to check that the name given to `prop` actually exists in the
-object that the resulting lens is applied to.
-But Flow is not currently able to check types of values set or retrieved using
-`prop`.
+the only difference is in type-checking.
+`prop` checks keys, but does not check types of values;
+`key` checks types of values, but does not check keys.
 
 ### `success: Setting<Promise<A>,Promise<B>,A,B>`
 
