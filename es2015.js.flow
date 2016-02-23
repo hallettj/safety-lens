@@ -2,12 +2,12 @@
 
 import { id, lens } from './lens'
 
-import type { Identity, Lens, Lens_, Pure_, Traversal, Traversal_ } from './lens'
+import type { Identity, Lens, Lens_, Pure_, Traversal } from './lens'
 import type { Functor, Pure } from './lib/fantasy-land'
 
 /* arrays */
 
-function index<A>(idx: number): Traversal_<A[],A> {
+function index<A,B>(idx: number): Traversal<A[],(A|B[]),A,B> {
   return f => (pure, array) => {
     if (typeof array[idx] !== 'undefined') {
       return f(pure, array[idx]).map(updatedValue => (
