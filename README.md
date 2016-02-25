@@ -1,6 +1,8 @@
 safety-lens
 ===========
 
+[![Join the chat at https://gitter.im/hallettj/safety-lens](https://badges.gitter.im/hallettj/safety-lens.svg)](https://gitter.im/hallettj/safety-lens?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Type-safe, functional lens library in JavaScript.
 This is basically a port of some of the concepts from the Haskell [lens][] library.
 Safety-lens goes best with [Flow][], and pairs well with [Immutable][].
