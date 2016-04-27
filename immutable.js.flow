@@ -4,7 +4,7 @@ import { foldrOf, lens } from './lens'
 import { ap } from './lib/Applicative'
 import { Collection, List, Map, Record, Set, Stack } from 'immutable'
 
-import type { Iterable, IndexedCollection, KeyedIterable } from 'immutable'
+import type { Iterable } from 'immutable'
 import type { Apply, Pure } from './lib/fantasy-land'
 import type { Endo, Fold, Lens_, Traversal_ } from './lens'
 
@@ -81,8 +81,11 @@ function traverse<A,K,B, FB: Apply<B>, TB: Collection<K,B>, FTB: Apply<TB>>(
     if (obj instanceof Collection.Keyed) {
       return traverseKeyedCollection((f:any))(pure, obj)  // TODO: get rid of type cast
     }
-    else if (obj instanceof Collection.Indexed || obj instanceof Collection.Set) {
-      return traverseCollection((f:any))(pure, obj)
+    else if (obj instanceof Collection.Indexed) {
+      return traverseIndexedCollection((f:any))(pure, obj)
+    }
+    else if (obj instanceof Collection.Set) {
+      return traverseSetCollection((f:any))(pure, obj)
     }
     else {
       throw new TypeError("No `traverse` implementation for "+ nameOfType(obj))
@@ -90,21 +93,31 @@ function traverse<A,K,B, FB: Apply<B>, TB: Collection<K,B>, FTB: Apply<TB>>(
   }
 }
 
-function traverseCollection<A,B, TB: IndexedCollection<B>, FTB: Apply<TB>>(
+function traverseIndexedCollection<A,B, TB: Collection.Indexed<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: IndexedCollection<A>) => FTB {
+): (pure: Pure, obj: Collection.Indexed<A>) => FTB {
   return (pure, obj) => {
-    var cons = consImpl(obj)
+    var cons = indexedCons(obj)
     var emptyColl = obj.take(0)
     return obj.reduceRight((ys, x) => f(pure, x).map(cons).ap(ys), pure(emptyColl))
   }
 }
 
-function traverseKeyedCollection<A,K,B, TB: KeyedIterable<K,B>, FTB: Apply<TB>>(
+function traverseSetCollection<A,B, TB: Collection.Set<B>, FTB: Apply<TB>>(
   f: <FB: Apply<B>>(pure: Pure, _: A) => FB
-): (pure: Pure, obj: KeyedIterable<K,A>) => FTB {
+): (pure: Pure, obj: Collection.Set<A>) => FTB {
   return (pure, obj) => {
-    var cons = consKeyedImpl(obj)
+    var cons = setCons(obj)
+    var emptyColl = obj.take(0)
+    return obj.reduceRight((ys, x) => f(pure, x).map(cons).ap(ys), pure(emptyColl))
+  }
+}
+
+function traverseKeyedCollection<A,K,B, TB: Collection.Keyed<K,B>, FTB: Apply<TB>>(
+  f: <FB: Apply<B>>(pure: Pure, _: A) => FB
+): (pure: Pure, obj: Collection.Keyed<K,A>) => FTB {
+  return (pure, obj) => {
+    var cons = keyedCons(obj)
     var emptyColl = obj.take(0)
     return obj.reduceRight(
       (ys, x, key) => f(pure, x).map(cons).ap(pure(key)).ap(ys),
@@ -113,7 +126,7 @@ function traverseKeyedCollection<A,K,B, TB: KeyedIterable<K,B>, FTB: Apply<TB>>(
   }
 }
 
-function consImpl<A,S: IndexedCollection<A>>(coll: S): (val: A) => (coll: S) => S {
+function indexedCons<A,S: Collection.Indexed<A>>(coll: S): (val: A) => (coll: S) => S {
   return val => coll => {
     if (coll instanceof List) {
       return coll.unshift(val)
@@ -121,7 +134,16 @@ function consImpl<A,S: IndexedCollection<A>>(coll: S): (val: A) => (coll: S) => 
     else if (coll instanceof Stack) {
       return coll.unshift(val)
     }
-    else if (coll instanceof Set) {
+    else {
+      const emptyColl = (coll:any).take(0)
+      return emptyColl.concat(val).concat(coll)
+    }
+  }
+}
+
+function setCons<A,S: Collection.Set<A>>(coll: S): (val: A) => (coll: S) => S {
+  return val => coll => {
+    if (coll instanceof Set) {
       return coll.add(val)
     }
     else {
@@ -131,7 +153,7 @@ function consImpl<A,S: IndexedCollection<A>>(coll: S): (val: A) => (coll: S) => 
   }
 }
 
-function consKeyedImpl<A,K,S: KeyedIterable<K,A>>(coll: S): (val: A) => (key: K) => (coll: S) => S {
+function keyedCons<A,K,S: Collection.Keyed<K,A>>(coll: S): (val: A) => (key: K) => (coll: S) => S {
   return val => key => coll => {
     if (coll instanceof Map) {
       return coll.set(key, val)
