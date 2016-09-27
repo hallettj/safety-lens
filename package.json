@@ -63,6 +63,6 @@
     "deep-equal": "~1.0.1",
     "flow-bin": "~0.27.0",
     "jsverify": "~0.7.1",
-    "mocha": "~2.4"
+    "mocha": "~3.1.0"
   }
 }
