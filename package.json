@@ -11,17 +11,29 @@
   },
   "main": "lens.js",
   "scripts": {
-    "test": "node_modules/.bin/babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
-    "typecheck": "node_modules/.bin/flow check",
-    "prepublish": "npm run typecheck && make && npm test"
+    "pretest": "make",
+    "test": "babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
+    "typecheck": "flow check",
+    "prepublishOnly": "npm run typecheck && make && npm test",
+    "prepublish": "(not-in-publish && echo 'Skipping prepublish') || npm run require-npm4-to-publish",
+    "require-npm4-to-publish": "semver -r '>=4.0.0' $(npm --version) || (echo 'NPM 4+ required to publish' && exit 1)"
   },
   "babel": {
     "presets": [
-      "es2015"
+      "react",
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions"
+            ]
+          }
+        }
+      ]
     ],
     "plugins": [
-      "transform-class-properties",
-      "transform-flow-strip-types"
+      "transform-class-properties"
     ]
   },
   "keywords": [
@@ -48,21 +60,23 @@
   "directories": {
     "doc": "doc"
   },
-  "dependencies": {
-    "immutable": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "babel-cli": "~6.10.1",
-    "babel-plugin-syntax-flow": "~6.5",
-    "babel-plugin-transform-class-properties": "~6.10.2",
-    "babel-plugin-transform-flow-strip-types": "~6.5",
-    "babel-preset-es2015": "~6.5",
-    "chai": "~3",
-    "chai-as-promised": "~5.2.0",
-    "chai-immutable": "~1.6.0",
-    "deep-equal": "~1.0.1",
-    "flow-bin": "~0.27.0",
-    "jsverify": "~0.7.1",
-    "mocha": "~3.4.2"
-  }
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "chai-immutable": "^1.6.0",
+    "deep-equal": "^1.0.1",
+    "flow-bin": "^0.48.0",
+    "immutable": "^3.8.1",
+    "in-publish": "^2.0.0",
+    "jsverify": "^0.8.2",
+    "mocha": "^3.4.2",
+    "mori": "^0.3.2",
+    "prettier-standard": "^5.1.0"
+  },
+  "peerDependencies": {}
 }
