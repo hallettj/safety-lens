@@ -61,7 +61,7 @@
     "chai-as-promised": "~5.2.0",
     "chai-immutable": "~1.6.0",
     "deep-equal": "~1.0.1",
-    "flow-bin": "~0.27.0",
+    "flow-bin": "~0.30.0",
     "jsverify": "~0.7.1",
     "mocha": "~3.4.2"
   }
