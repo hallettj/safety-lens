@@ -1,7 +1,7 @@
 {
   "name": "safety-lens",
   "version": "1.5.0",
-  "description": "Type-safe, functional lens library supporting Immutable.js",
+  "description": "Type-safe, functional lens library",
   "author": "Jesse Hallett <jesse@sitr.us>",
   "license": "Apache-2.0",
   "homepage": "https://github.com/hallettj/safety-lens",
@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/hallettj/safety-lens.git"
   },
-  "main": "lens.js",
+  "main": "lib/index.js",
   "scripts": {
     "pretest": "make",
     "test": "babel-node node_modules/.bin/_mocha --full-trace --recursive -R spec -C --check-leaks test/",
@@ -41,26 +41,20 @@
     "lenses",
     "functional",
     "Flow",
-    "cursors",
-    "immutable",
-    "Immutable.js"
+    "cursors"
   ],
   "files": [
-    "lens.js",
-    "lens.js.flow",
-    "lens.js.map",
-    "immutable.js",
-    "immutable.js.flow",
-    "immutable.js.map",
-    "es2015.js",
-    "es2015.js.flow",
-    "es2015.js.map",
+    "native.js",
+    "native.js.flow",
+    "native.js.map",
     "lib"
   ],
   "directories": {
     "doc": "doc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "flow-static-land": "^0.2.6"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -68,14 +62,11 @@
     "babel-preset-react": "^6.24.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
-    "chai-immutable": "^1.6.0",
     "deep-equal": "^1.0.1",
     "flow-bin": "^0.48.0",
-    "immutable": "^3.8.1",
     "in-publish": "^2.0.0",
     "jsverify": "^0.8.2",
     "mocha": "^3.4.2",
-    "mori": "^0.3.2",
     "prettier-standard": "^5.1.0"
   },
   "peerDependencies": {}

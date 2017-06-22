@@ -806,10 +806,6 @@ chai-as-promised@^7.0.0:
     check-error "^1.0.2"
     eslint "^3.19.0"
 
-chai-immutable@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/chai-immutable/-/chai-immutable-1.6.0.tgz#9ec00bdd67948b13b20fcbb89cbf4af2ce6f9247"
-
 chai@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.0.2.tgz#2f7327c4de6f385dd7787999e2ab02697a32b83b"
@@ -1269,6 +1265,10 @@ flow-bin@^0.48.0:
   version "0.48.0"
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.48.0.tgz#72d075143524358db8901525e3c784dc13a7c7ee"
 
+flow-static-land@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/flow-static-land/-/flow-static-land-0.2.6.tgz#dfd0a29d2894f03eb58e09047921e107f6b8bcd2"
+
 for-in@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -1497,10 +1497,6 @@ http-signature@~1.1.0:
 ignore@^3.2.0, ignore@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.3.tgz#432352e57accd87ab3110e82d3fea0e47812156d"
-
-immutable@^3.8.1:
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -1996,10 +1992,6 @@ mocha@^3.4.2:
     lodash.create "3.1.1"
     mkdirp "0.5.1"
     supports-color "3.1.2"
-
-mori@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/mori/-/mori-0.3.2.tgz#1a53da165287f3bef0cab62398c4931bece80a3f"
 
 ms@0.7.2:
   version "0.7.2"

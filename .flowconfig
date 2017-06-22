@@ -1,9 +1,7 @@
 [ignore]
-.*/node_modules/flow-bin/.*
+.*/node_modules/flow-static-land/lib/Aff.js
+.*/node_modules/flow-static-land/src/Aff.js
 .*/node_modules/jsverify/lib/.*
-.*/node_modules/babel.*
-.*/node_modules/is-my-json-valid/.*
-.*[^e]\.json
 
 [include]
 

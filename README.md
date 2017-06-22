@@ -5,7 +5,7 @@ safety-lens
 
 Type-safe, functional lens library in JavaScript.
 This is basically a port of some of the concepts from the Haskell [lens][] library.
-Safety-lens goes best with [Flow][], and pairs well with [Immutable][].
+Safety-lens goes best with [Flow][].
 
 [lens]: https://hackage.haskell.org/package/lens
 [Flow]: http://flowtype.org/
@@ -16,7 +16,7 @@ For example:
 
 ```js
 import { get, set } from 'safety-lens'
-import { prop } from 'safety-lens/es2015'
+import { prop } from 'safety-lens/native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -48,7 +48,8 @@ This is obviously more complicated than writing the equivalent expressions
 But lenses do come with several advantages:
 
 - Lenses perform immutable updates: you get an updated copy of a data structure, while the original is untouched.
-  This means that lenses pair nicely with immutable data libraries like [Immutable][] or [Mori][].
+  This means that lenses pair nicely with immutable data libraries like [Immutable][] or [Mori][],
+  and support functional frameworks, such as [Redux][] reducers.
 
 - Lenses can be composed to focus on deeply nested pieces of a data structure.
   Updating a deeply-nested, immutable data structure by hand is painful -
@@ -69,6 +70,7 @@ But lenses do come with several advantages:
 
 [Immutable]: https://facebook.github.io/immutable-js/
 [Mori]: https://swannodette.github.io/mori/
+[Redux]: http://redux.js.org/
 [getIn]: https://facebook.github.io/immutable-js/docs/#/Iterable/getIn
 [setIn]: https://facebook.github.io/immutable-js/docs/#/Map/setIn
 
@@ -96,12 +98,13 @@ npm install --save safety-lens
 Run:
 
 ```
-$ npm install
+$ yarn install && make
 ```
 
-That invokes the `prepublish` npm script,
-which runs the type checker, transpiles code, and runs tests.
-Requires GNU Make.
+Requires [yarn][] and [GNU Make][].
+
+[yarn]: https://yarnpkg.com/en/
+[GNU Make]: https://www.gnu.org/software/make/
 
 ## Examples of usage
 
@@ -109,7 +112,7 @@ Requires GNU Make.
 
 ```js
 import { get, set } from 'safety-lens'
-import { prop } from 'safety-lens/es2015'
+import { prop } from 'safety-lens/native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -126,7 +129,7 @@ assert( get(prop('bar'), obj) === 3 )
 
 ```js
 import { over } from 'safety-lens'
-import { prop } from 'safety-lens/es2015'
+import { prop } from 'safety-lens/native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -140,22 +143,19 @@ assert( obj.bar === 4 )
 Imagine a program with values of this type:
 
 ```js
-import { List } from 'immutable'
+type Calendar = Array<{ date: Date, title: string }>
 
-type Calendar = List<{ date: Date, title: string }>
-
-const events = List.of(
+const events = [
   { date: new Date(), title: 'get coffee' },
   { date: new Date(), title: 'plan day' }
-)
+]
 ```
 
 To construct a lens that can focus on the title of the first event in a calendar list:
 
 ```js
 import { compose, lookup } from 'safety-lens'
-import { index } from 'safety-lens/immutable'
-import { prop } from 'safety-lens/es2015'
+import { index, prop } from 'safety-lens/native'
 
 const firstEventLens = index(0)
 const titleLens = prop('title')
@@ -170,7 +170,7 @@ To operate on all events in a calendar:
 
 ```js
 import { over } from 'safety-lens'
-import { traverse } from 'safety-lens/immutable'
+import { traverse } from 'safety-lens/native'
 
 const dateLens = prop('date')
 
