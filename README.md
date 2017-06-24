@@ -16,7 +16,7 @@ For example:
 
 ```js
 import { get, set } from 'safety-lens'
-import { prop } from 'safety-lens/native'
+import { prop } from 'safety-lens-native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -112,7 +112,7 @@ Requires [yarn][] and [GNU Make][].
 
 ```js
 import { get, set } from 'safety-lens'
-import { prop } from 'safety-lens/native'
+import { prop } from 'safety-lens-native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -129,7 +129,7 @@ assert( get(prop('bar'), obj) === 3 )
 
 ```js
 import { over } from 'safety-lens'
-import { prop } from 'safety-lens/native'
+import { prop } from 'safety-lens-native'
 
 let obj = { foo: 1, bar: 2 }
 
@@ -155,7 +155,7 @@ To construct a lens that can focus on the title of the first event in a calendar
 
 ```js
 import { compose, lookup } from 'safety-lens'
-import { index, prop } from 'safety-lens/native'
+import { index, prop } from 'safety-lens-native'
 
 const firstEventLens = index(0)
 const titleLens = prop('title')
@@ -170,7 +170,7 @@ To operate on all events in a calendar:
 
 ```js
 import { over } from 'safety-lens'
-import { traverse } from 'safety-lens/native'
+import { traverse } from 'safety-lens-native'
 
 const dateLens = prop('date')
 
