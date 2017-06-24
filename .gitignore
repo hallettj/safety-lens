@@ -1,6 +1,9 @@
 node_modules/
 npm-debug.log
-/*.js
-/*.js.map
-lib/**/*.js
-lib/**/*.js.map
+yarn-error.log
+
+# Generated files
+lib/
+
+# Misc
+.DS_Store

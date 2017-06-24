@@ -1,10 +1,10 @@
 /* @noflow */
 
 import { pair, property } from 'jsverify'
-import { get, set } from '../lib'
+import { get, set } from '../src'
 
 import type { Arbitrary } from 'jsverify'
-import type { Lens_, Traversal_ } from '../lib'
+import type { Lens_, Traversal_ } from '../src'
 
 export { lensLaws, traversalLaws }
 
