@@ -1252,9 +1252,9 @@ flow-bin@^0.48.0:
   version "0.48.0"
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.48.0.tgz#72d075143524358db8901525e3c784dc13a7c7ee"
 
-flow-static-land@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/flow-static-land/-/flow-static-land-0.2.6.tgz#dfd0a29d2894f03eb58e09047921e107f6b8bcd2"
+flow-static-land@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/flow-static-land/-/flow-static-land-0.2.7.tgz#937f9dcb2780889a609155e5d1a55a993bc2ffb3"
 
 for-in@^1.0.1:
   version "1.0.2"

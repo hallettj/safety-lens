@@ -47,7 +47,7 @@
     "doc": "doc"
   },
   "dependencies": {
-    "flow-static-land": "^0.2.6"
+    "flow-static-land": "^0.2.7"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
