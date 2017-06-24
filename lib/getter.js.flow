@@ -24,11 +24,17 @@ export function getter<S, A> (getter: (obj: S) => A): Getter<S, A> {
 
 export const to = getter
 
+declare function get<S, A>(lens: Getting<A, S, A>, obj: S): A
+declare function get<S, A>(lens: Getting<A, S, A>): (obj: S) => A
+
 /*
  * Given a getter (which is a specialized lens), and data structure, gets
  * a value out of the data structure.
  */
-export function get<S, A> (getter: Getting<A, S, A>, obj: S): A {
-  const resultConst = getter((_, val) => Const.inj(val))(Const, obj)
+export function get (lens, obj) {
+  if (typeof obj === 'undefined') {
+    return obj => get(lens, obj)
+  }
+  const resultConst = lens((_, val) => Const.inj(val))(Const, obj)
   return Const.prj(resultConst)
 }
