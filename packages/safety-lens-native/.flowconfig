@@ -1,7 +1,9 @@
 [ignore]
+.*/node_modules/conventional-changelog-core/test/fixtures/.*
 .*/node_modules/jsverify/lib/.*
 
 [include]
+../../node_modules/
 
 [libs]
 ./types/
