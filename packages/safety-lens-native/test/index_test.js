@@ -23,7 +23,7 @@ import {
   over,
   set,
   sumOf
-} from '../lib'
+} from 'safety-lens'
 import {
   _1,
   _2,
@@ -32,7 +32,7 @@ import {
   failure,
   toArrayOf,
   traverseArray
-} from '../native'
+} from '../lib'
 import * as laws from 'safety-lens/test/laws'
 
 chai.use(chaiAsPromised)
