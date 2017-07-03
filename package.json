@@ -1,12 +1,15 @@
 {
-	"devDependencies": {
-		"babel-preset-env": "^1.5.2",
-		"babel-preset-react": "^6.24.1",
-		"chai": "^4.0.2",
-		"chai-as-promised": "^7.1.0",
-		"deep-equal": "^1.0.1",
-		"jsverify": "^0.8.2",
-		"lerna": "^2.0.0-rc.5",
-		"prettier-standard": "^6.0.0"
-	}
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.1.0",
+    "deep-equal": "^1.0.1",
+    "jsverify": "^0.8.2",
+    "lerna": "^2.0.0-rc.5",
+    "prettier-standard": "^6.0.0"
+  }
 }
