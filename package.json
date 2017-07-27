@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist"
+    "bootstrap": "lerna bootstrap --hoist",
+    "test": "echo 'I can not do that Dave!'"
   },
   "devDependencies": {
     "babel-preset-env": "^1.5.2",
