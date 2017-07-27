@@ -1,18 +1,23 @@
 /* @flow */
 import { set, over } from '../setter';
 
-export function chain(s: S): Chain<S> {
-  return {
-      set: function(setter: Setting<S, T, A, B>, val: B): Chain<T> {
-          return chain(set(setter, val, s));
-      },
+class Chain<S> {
+    s: S;
 
-      over: function(setter: Setting<S, T, A, B>, f: (val: A) => B): Chain<T> {
-          return chain(over(setter, f, s));
-      },
+    constructor(s: S) {
+        this.s = s;
+    }
 
-      build: function(): S {
-        return s;
-      }
-  };
-};
+    set(setter: Setting<S, T, A, B>, val: B): Chain<T> {
+        return new Chain(set(setter, val, this.s));
+    }
+
+    over(setter: Setting<S, T, A, B>, f: (val: A) => B): Chain<T> {
+        return new Chain(over(setter, f, this.s));
+    }
+
+    build(): S {
+        return this.s;
+    }
+}
+export const chain = (s: S): Chain<S> => new Chain(s);
